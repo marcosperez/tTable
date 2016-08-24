@@ -82,8 +82,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 !this.campos[index_colum].radioButton &&
                 !this.campos[index_colum].checkBox &&
                 fila[this.campos[index_colum].nombreCampo] == "" &&
-                this.campos[index_colum].editable === undefined)
+                this.campos[index_colum].editable === undefined) {
+
                 return false;
+            }
         }
 
         return true;
@@ -216,6 +218,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                         default_get_campo;
                     var esEditable = this.campos[index_cell].editable === undefined || this.campos[index_cell].editable === true;
                     if (esEditable) {
+
                         this.campos[index_cell].get_campo(this.nombreTabla, '_fila_' + this.filas + '_columna_' + index_cell);
                         if (this.campos[index_cell].valorDefecto)
                             campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.filas + '_columna_' + index_cell, this.campos[index_cell].valorDefecto);
@@ -450,8 +453,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     this.campos[index_cell].get_campo(this.nombreTabla, '_fila_' + row_index + '_columna_' + index_cell);
 
                 //this.campos[index_cell].get_campo(nombreCampoDef);
-
-                campos_defs.set_value(nombreCampoDef, valor);
+                if (valor)
+                    campos_defs.set_value(nombreCampoDef, valor);
             }
         }
 
@@ -928,6 +931,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
                     v1 = (nro_campo_tipo == '100') ? parseInt(a[cabecera]) : a[cabecera];
                     v2 = (nro_campo_tipo == '100') ? parseInt(b[cabecera]) : b[cabecera];
+                    if(!v1)
+                        return -1
+                    if (!v2)
+                        return 1
+
                     if (v1 > v2) {
                         return -1;
                     }
@@ -946,6 +954,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 funcionOrdenacion = function (a, b) {
                     v1 = (nro_campo_tipo == '100') ? parseInt(a[cabecera]) : a[cabecera];
                     v2 = (nro_campo_tipo == '100') ? parseInt(b[cabecera]) : b[cabecera];
+
+                    if (!v1)
+                        return 1
+                    if (!v2)
+                        return -1
+
                     if (v1 < v2) {
                         return -1;
                     }
@@ -1000,8 +1014,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 for (var index_campos = 0; index_campos < tabla.campos.length; index_campos++) {
 
                     fila[tabla.campos[index_campos].nombreCampo] = rs.getdata(tabla.campos[index_campos].nombreCampo);
-                    if (tabla.campos[index_campos].id)
+                    if (tabla.campos[index_campos].id) {
+
                         fila[tabla.campos[index_campos].id] = rs.getdata(tabla.campos[index_campos].id);
+                    }
                 }
                 fila.tabla_control = {};
                 tabla.data.push(fila);
