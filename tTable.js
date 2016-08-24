@@ -18,6 +18,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.nombreTabla = nombreTabla
     this.cabeceras = cabeceras;
     this.campos = campos;
+    this.camposHide = [];
     this.filtroXML = filtroXML;
     this.filtroWhere = '';
     this.radioSeleccionadoCampo = "";
@@ -171,7 +172,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var index_cell = 0;
 
         //Definimos la funcion de generacion del campo
-        
+
         for (; index_cell < this.campos.length; index_cell++) {
             celdas[index_cell] = row.insertCell(index_cell);
             valores_campos[index_cell].fila = this.filas;
@@ -193,7 +194,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
             } else {
-                
+
                 if (this.campos[index_cell].radioButton) {
                     //Definimos la funcion para los radio button.
                     this.campos[index_cell].get_campo = this.campos[index_cell].get_campo ?
@@ -424,7 +425,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     function modificar_fila(row_index) {
 
         //Variables auxiliares
-        
+
         var index_cell = 0;
         var fila = $('campos_tb_' + this.nombreTabla).rows[row_index];
         var esUnCampoDef = campos_defs.items[nombreCampoDef] ? true : false;
@@ -531,6 +532,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         for (var index_cell = 0; index_cell < this.columnas; index_cell++) {
             fila_objeto = this.getCelda(fila.cells[index_cell], fila_objeto, row_index, index_cell)
+        }
+
+        for (var index_campo = 0; index_campo < this.camposHide.length; index_campo++) {
+            fila_objeto[this.camposHide[index_campo].nombreCampo] = this.data[row_index][this.camposHide[index_campo].nombreCampo];
         }
         //valores de control
         fila_objeto.indice = row_index;
@@ -687,8 +692,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             if (campoId) {
                 valoresXML += campoId + "='" + fila[campoId] + "' ";
             }
-
         }
+        for (var index_campo = 0; index_campo < this.camposHide.length; index_campo++) {
+            var campoNombre = this.camposHide[index_campo].nombreCampo;
+            valoresXML += campoNombre + "='" + fila[campoNombre] + "' ";
+        }
+
 
         return valoresXML;
 
@@ -787,6 +796,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 nombreColumna = nombresColumnas[k];
                 for (var i = 1; i < table_html.rows.length - 1; i++) { //filas
                     row = table_html.rows[i];
+
                     for (var j = 0; j < this.campos.length; j++) { //columnas
                         if ((!this.data[i].tabla_control.existeEnBd || this.data[i].tabla_control.modificado) && !this.data[i].tabla_control.eliminado) {
                             if (this.campos[j].nombreCampo != nombreColumna) continue;
@@ -892,7 +902,6 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         for (var row_index = 1 ; row_index < this.data.length ; row_index++) {
             if (!this.data[row_index].tabla_control.existeEnBd || this.data[row_index].tabla_control.modificado) {
-
                 var fila = this.getFila(row_index);
                 this.data[row_index] = fila;
                 this.data[row_index].tabla_control = {};
@@ -931,7 +940,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
                     v1 = (nro_campo_tipo == '100') ? parseInt(a[cabecera]) : a[cabecera];
                     v2 = (nro_campo_tipo == '100') ? parseInt(b[cabecera]) : b[cabecera];
-                    if(!v1)
+                    if (!v1)
                         return -1
                     if (!v2)
                         return 1
@@ -1019,6 +1028,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                         fila[tabla.campos[index_campos].id] = rs.getdata(tabla.campos[index_campos].id);
                     }
                 }
+
+                for (var index_campos = 0; index_campos < tabla.camposHide.length; index_campos++) {
+
+                    fila[tabla.camposHide[index_campos].nombreCampo] = rs.getdata(tabla.camposHide[index_campos].nombreCampo);
+                }
+
                 fila.tabla_control = {};
                 tabla.data.push(fila);
 
