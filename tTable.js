@@ -298,11 +298,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             index_cell++;
         }
 
-
         //Modificar
         //En caso de que sea nuevo no va el boton modificar
         if (this.editable) {
-            if (valores_campos[this.columnas]) {
+            if (valores_campos[this.columnas]+1) {
                 celdas[index_cell] = row.insertCell(index_cell);
                 celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + (this.filas - 1) + '_columna_' + (index_cell)
                 celdas[index_cell].innerHTML = '<center><img border="0" onclick="' + this.nombreTabla + '.modificar_fila(\'' + this.filas + '\')"src="/FW/image/icons/editar.png" title="editar" style="cursor:pointer"/></center>';
