@@ -44,7 +44,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Campos que se van a cargar desde el resultado de base de datos pero no se van a mostrar en la tabla
     //Json {nombreCampo: nombre del campo hide en la BD}
     this.camposHide = [];
-    // Representa la consulta xml que va a cargar de datos la tabl{}
+    // Representa la consulta xml que va a cargar de datos la tabla
     this.filtroXML = filtroXML;
     //Filtro where aplicable a la consulta principal de la tabla
     this.filtroWhere = '';
@@ -1387,32 +1387,5 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         return '<input type="radio"  name="radiobutton" value="' + stringRadio + '<br>';
     }
-
-    /**
-     * Description
-     * Valida que cuando exista un radio button siempre tiene q existir al menos uno seleccionado.
-     * @method validarRadioButtonSeleccionado
-     * @param {} nombreCampo
-     * @return Literal
-     */
-    /*this.validarRadioButtonSeleccionado = function (nombreCampo) {
-        var contador = 0;
-        //
-        for (var row_index = 1; row_index < this.filas; row_index++) {
-            if (!this.data[row_index].tabla_control.eliminado) {
-                contador++;
-                var fila = this.getFila(row_index);
-                if (fila[nombreCampo])
-                    return true;
-            }
-        }
-        //en caso de que no halla filas
-        if (contador == 0)
-            return true;
-
-        //Si existe por lo menos una fila y no tiene radiobutton activado devolvemos false
-        return false;
-
-    }*/
 
 }
