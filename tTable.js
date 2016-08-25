@@ -690,6 +690,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Quita todos los campos defs de la tabla. Se utiliza generalmente previo al refresco de tabla o ordenamiento.
      * @method removeCamposDef
      * @return 
      */
@@ -707,6 +708,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Recarga la tabla borrando campos defs y realizando nuevamente la consulta.
      * @method refresh
      * @param {} filtro
      * @return 
@@ -719,6 +721,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Carga la tabla segun el metodo especificado
      * @method table_load_html
      * @return 
      */
@@ -733,6 +736,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Actualiza los datos almacenados en memoria sobre las filas de la tabla. Esto es previo a una reordenacion.
      * @method actualizarData
      * @return 
      */
@@ -751,10 +755,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     }
     /**
      * Description
+     * Ordena una tabla segun una cabecera especificado.
      * @method ordenar
      * @param {} cabecera
      * @param {} tipo
-     * @param {} nro_campo_tipo
+     * @param {} nro_campo_tipo: si el nro_campo_tipo se realiza ordenacion por valor numerico.
      * @return 
      */
     this.ordenar = function (cabecera, tipo, nro_campo_tipo) {
@@ -826,6 +831,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Realiza la consulta a la base de datos y completa la tabla
      * @method table_load_html_ascy
      * @param {} tabla
      * @return 
@@ -845,6 +851,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             tabla.data = [];
             while (!rs.eof()) {
                 var fila = {};
+                //Para cada campo recuperamos su valor y su id correspondiente en caso de contar con uno.
                 for (var index_campos = 0; index_campos < tabla.campos.length; index_campos++) {
 
                     fila[tabla.campos[index_campos].nombreCampo] = rs.getdata(tabla.campos[index_campos].nombreCampo);
@@ -854,6 +861,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     }
                 }
 
+                //Para cada campo hide recuperamos el valor y lo almacenamos en los datos de la fila.
                 for (var index_campos = 0; index_campos < tabla.camposHide.length; index_campos++) {
 
                     fila[tabla.camposHide[index_campos].nombreCampo] = rs.getdata(tabla.camposHide[index_campos].nombreCampo);
@@ -882,12 +890,13 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     *  NO FUNCIONA
      * @method table_load_html_sync
      * @param {} tabla
      * @return 
      */
     this.table_load_html_sync = function (tabla) {
-
+        /*
         this.columnas = 0;
         this.filas = 0;
         this.radioSeleccionadoCampo = "";
@@ -904,11 +913,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         rs.open(this.filtroXML, '', this.filtroWhere, '', '');
         tabla.mostrar_tabla(tabla);
-
+        */
     }
 
     /**
      * Description
+     * Calcula el tamaño de la tabla y lo adapta a el tamaño de su contenedor.
      * @method resize
      * @return 
      */
@@ -953,39 +963,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         }
         campos_head.resize("header_tbl_" + this.nombreTabla, "campos_tb_" + this.nombreTabla);
 
-        /*
-        var tabla = this;
 
-        var altura_tabla_boton = 10;
-
-
-        var div_tabla = $(tabla.nombreTabla);
-
-        var div_titulos = $("div_titulos_" + tabla.nombreTabla);
-        var header_table = $("header_tbl_" + tabla.nombreTabla);
-
-        var altura_tabla_titulo = header_table.getHeight() > 20 ? header_table.getHeight() : 20;
-        //var ancho_tabla_titulo = header_table.getWidth();
-        var altura_tabla = div_tabla.getHeight();
-
-
-        var altura_tabla_cuerpo = (altura_tabla - altura_tabla_boton - altura_tabla_titulo - 2);
-
-
-        div_titulos.style.height = altura_tabla_titulo + "px";
-        var div_boton = $("div_boton_" + tabla.nombreTabla);
-        div_boton.style.height = altura_tabla_boton + "px";
-        var div_cuerpo = $("div_cuerpo_" + tabla.nombreTabla);
-        //var scrollWidth = divBody.getWidth() - tbBodyWidth
-        div_cuerpo.style.height = altura_tabla_cuerpo > 0 ? altura_tabla_cuerpo + "px" : "0px";
-        //if (ancho_tabla_titulo < 400)
-        //$("campos_tb_" + this.nombreTabla).style.width = "100%";
-
-        campos_head.resize("header_tbl_" + this.nombreTabla, "campos_tb_" + this.nombreTabla);*/
     }
 
     /**
      * Description
+     * Genera el html de la tabla segun las especificaciones cargadas.
      * @method mostrar_tabla
      * @param {} tabla
      * @return 
@@ -995,11 +978,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         tabla.filas = 1;
         tabla.columnas = 0;
-        /*tabla.tabla_control.push({
-            existeEnBd: 0
-            , modificado: 0
-            , eliminado: 0
-        });*/
+
+
         var fila = {};
         fila.tabla_control = {};
         fila.tabla_control = {
@@ -1011,9 +991,6 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         var srtHtml =
             '<div style="width:100%;height:100%;overflow:hidden;background-color:white;">' +
-
-
-
             '<div style="overflow:hidden;" id="div_titulos_' + tabla.nombreTabla + '" >' +
             '<table  style="' + tabla.tHeader.style + '"  id="header_tbl_' + tabla.nombreTabla + '" >  ' +
             '<tr class="tbLabel">';
@@ -1022,13 +999,14 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             //Cargamos valor por defecto campos de tipo texto.
             tabla.campos[col_index].nro_campo_tipo = tabla.campos[col_index].nro_campo_tipo ? tabla.campos[col_index].nro_campo_tipo : '104';
             var ordenHTML = '';
+
             //Valores de control 
             var tieneGetHtml = tabla.campos[col_index].get_html ? true : false;
             var tieneCheckbox = tabla.campos[col_index].checkBox ? true : false;
             var tieneRadioButton = tabla.campos[col_index].radioButton ? true : false;
             var esOrdenable = (tabla.campos[col_index].ordenable === undefined) ? true : false;
 
-
+            //Para los getHtml(se puede especificar ordenable:true para permitirlo), Checkbox y raddiobutton no se permite que sean ordenables.
             if (tabla.campos[col_index].ordenable === true || (!tieneGetHtml && !tieneCheckbox && !tieneRadioButton && esOrdenable)) {
                 ordenHTML = '<img src="/FW/image/icons/up_a.png" onclick="return ' + tabla.nombreTabla + '.ordenar( \'' + tabla.campos[col_index].nombreCampo + '\' ,\'ASC\',\'' + tabla.campos[col_index].nro_campo_tipo + '\')"></img>' +
                 '<img  src="/FW/image/icons/down_a.png" onclick="return ' + tabla.nombreTabla + '.ordenar( \'' + tabla.campos[col_index].nombreCampo + '\',\'DESC\',\'' + tabla.campos[col_index].nro_campo_tipo + '\' )"></img>'
@@ -1070,23 +1048,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var table = $('campos_tb_' + tabla.nombreTabla);
         table.className = "tb1 highlightEven highlightTROver scroll "
 
-        //Agrego una fila invisible
-
-        //var row_invisible = table.insertRow(table.rows.length);
-        //var columnas = tabla.columnas;
-        //columnas += tabla.eliminable ? 1 : 0;
-        //columnas += tabla.editable ? 1 : 0;
-        //var cell1 = row_invisible.insertCell(0);
-        //cell1.colSpan = columnas;
-        //cell1.style.height = "1px";
-
 
         var row = table.insertRow(table.rows.length);
-        //campos_head.resize("header_tbl_" + this.nombreTabla, "campos_tb_" + this.nombreTabla);
-
 
         var filas_aux = 0;
 
+        //Generamos el html para todas las fials segun los valores de campo enviados.
         for (var indice_fila = 1 ; indice_fila < tabla.data.length; indice_fila++) {
             var valores_campos = [];
             var index_cell = 0
@@ -1145,6 +1112,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Permite agregar una funcion que se va a ejecutar cuando se complete la carga del html de la tabla
      * @method addOnComplete
      * @param {} f
      * @return 
@@ -1155,6 +1123,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Ejecuta todas las funciones agregadas en el AddOnComplete
      * @method onComplete
      * @param {} tabla
      * @return 
@@ -1167,6 +1136,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Setea un valor en una celda segun su fila y nombre de campo.
      * @method setValor
      * @param {} nombreCampo
      * @param {} row_index
@@ -1186,6 +1156,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Carga el calor enviado en una celda verificando su tipo.
      * @method modCelda
      * @param {} celda
      * @param {} fila_objeto
@@ -1230,6 +1201,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
+     * Recupera el valor de una fila segun su nombre de campo.
      * @method getValor
      * @param {} nombreCampo
      * @param {} row_index
