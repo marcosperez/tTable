@@ -340,6 +340,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             this.data[row_index].tabla_control.eliminado = true;
             var tabla = $('campos_tb_' + this.nombreTabla);
             var fila = tabla.rows[row_index];
+
             if (this.data[row_index].tabla_control.existeEnBd) {
                 this.eliminar(this.getFila(row_index));
         }
@@ -351,38 +352,18 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         }
     }
 
-    /**
-     * Description
-     * @method tieneRadiobuttonSeleccionado
-     * Verifica si existen radios button en una fila.
-     * @param {} index_row
-     * @return valor
-     */
-    this.tieneRadiobuttonSeleccionado = function (index_row) {
-        valor = false;
-
-        for (var index_cell = 0; index_cell < this.campos.length; index_cell++)
-            if (this.campos[index_cell].radioButton) {
-
-                var fila = this.getFila(index_row);
-                valor = fila[this.campos[index_cell].nombreCampo];
-                valor = this.campos[index_cell].checkOnDelete ? valor : false;
-            }
-
-        return valor;
-    }
 
 
     /**
      * Description
      * @method modificar_fila
+     * Recibe como parametro un numero de fila y la convierte en editable. Agrega todos los campos defs correspondientes.
      * @param {} row_index
      * @return 
      */
     function modificar_fila(row_index) {
 
         //Variables auxiliares
-
         var index_cell = 0;
         var fila = $('campos_tb_' + this.nombreTabla).rows[row_index];
         var esUnCampoDef = campos_defs.items[nombreCampoDef] ? true : false;
@@ -418,8 +399,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         if (this.eliminable)
             index_cell++;
+
         fila.cells[index_cell].innerHTML = "";
+
+        //Definimos en la tabla de control que se modifico la siguiente fila
         this.data[row_index].tabla_control.modificado = true;
+
         //En caso de que tenga una callBack.. por defecto es vacio.
         this.modificar(this.getFila(row_index));
         //fila.style.display = fila.style.display === 'none' ? 'table-row' : 'none';
@@ -431,6 +416,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     /**
      * Description
      * @method getCelda
+     * Recupera los valores de una celda.
      * @param {} celda
      * @param {} fila_objeto
      * @param {} row_index
@@ -458,8 +444,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
         }
 
+        //Es un radio button significa que debemos revisar si el valor esta checkeado.
         if (esUnRadiobutton || esUnCheckBox) {
-
             fila_objeto[nombreCampo] = celda.firstChild.checked;
         } else {
             //Revisamos si es un campo def
@@ -479,6 +465,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     /**
      * Description
      * @method getFila
+     * Permite recuperar los valores de una fila. Se tienen encuentra filas ocultas.
      * @param {} row_index
      * @return fila_objeto
      */
@@ -487,10 +474,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var fila = $('campos_tb_' + this.nombreTabla).rows[row_index];
         fila_objeto = {};
 
+        //Cargamos los valores de las celdas.
         for (var index_cell = 0; index_cell < this.columnas; index_cell++) {
             fila_objeto = this.getCelda(fila.cells[index_cell], fila_objeto, row_index, index_cell)
         }
 
+        //Cargamos los valores de los campos ocultos.
         for (var index_campo = 0; index_campo < this.camposHide.length; index_campo++) {
             fila_objeto[this.camposHide[index_campo].nombreCampo] = this.data[row_index][this.camposHide[index_campo].nombreCampo];
         }
@@ -503,54 +492,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         return fila_objeto;
     }
 
-    /**
-     * Description
-     * @method existenRadioButton
-     * @return Literal
-     */
-    function existenRadioButton() {
-        for (var index_colum = 0; index_colum < this.columnas; index_colum++) {
-            if (this.campos[index_colum].radioButton)
-                return index_colum + 1;
-        }
 
-        return 0;
-    }
-
-    /**
-     * Description
-     * @method actualizarRadiobutton
-     * @return 
-     */
-    function actualizarRadiobutton() {
-        var existenRadioButton = this.existenRadioButton();
-        //revisamos si se modificaron los radioButtons. Si es que existen.
-        if (existenRadioButton) {
-            //Verificar Checkbox
-            var seleccionado = this.radioSeleccionadoCampo;
-
-            if (seleccionado) {
-                for (var row_index = 1; row_index < this.filas; row_index++) {
-                    fila = this.getFila(row_index);
-                    //si el radio esta checkeado y es diferente al inicial
-                    if (fila[this.campos[seleccionado.columna].nombreCampo] == true && (seleccionado.fila) != fila.indice) {
-                        this.data[fila.indice].tabla_control.modificado = true;
-                        this.data[seleccionado.fila].tabla_control.modificado = true;
-
-                    }
-                }
-            } else {
-                for (var row_index = 1; row_index < this.filas; row_index++) {
-                    fila = this.getFila(row_index);
-                    //si el radio esta checkeado y es diferente al inicial
-                    if (fila[this.campos[existenRadioButton - 1].nombreCampo] == true && seleccionado.fila != fila.indice) {
-                        this.data[fila.indice].tabla_control.modificado = true;
-
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * Description
@@ -1374,6 +1316,78 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 tabla.getValor(nombreCampo, row_index)
             };
             this.addOnComplete(valor);
+        }
+    }
+
+
+    /************************************** UTILES
+    /**
+     * Description
+     * @method tieneRadiobuttonSeleccionado
+     * Verifica si existen radios button seleccionado en una fila.
+     * @param {} index_row
+     * @return valor
+     */
+    this.tieneRadiobuttonSeleccionado = function (index_row) {
+        valor = false;
+
+        for (var index_cell = 0; index_cell < this.campos.length; index_cell++)
+            if (this.campos[index_cell].radioButton) {
+
+                var fila = this.getFila(index_row);
+                valor = fila[this.campos[index_cell].nombreCampo];
+                valor = this.campos[index_cell].checkOnDelete ? valor : false;
+            }
+
+        return valor;
+    }
+
+    /**
+     * Description
+     * @method existenRadioButton
+     * @return Literal
+     */
+    function existenRadioButton() {
+        for (var index_colum = 0; index_colum < this.columnas; index_colum++) {
+            if (this.campos[index_colum].radioButton)
+                return index_colum + 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Description
+     * @method actualizarRadiobutton
+     * @return
+     */
+    function actualizarRadiobutton() {
+        var existenRadioButton = this.existenRadioButton();
+        //revisamos si se modificaron los radioButtons. Si es que existen.
+        if (existenRadioButton) {
+            //Verificar Checkbox
+            var seleccionado = this.radioSeleccionadoCampo;
+
+            if (seleccionado) {
+                for (var row_index = 1; row_index < this.filas; row_index++) {
+                    fila = this.getFila(row_index);
+                    //si el radio esta checkeado y es diferente al inicial
+                    if (fila[this.campos[seleccionado.columna].nombreCampo] == true && (seleccionado.fila) != fila.indice) {
+                        this.data[fila.indice].tabla_control.modificado = true;
+                        this.data[seleccionado.fila].tabla_control.modificado = true;
+
+                    }
+                }
+            } else {
+                for (var row_index = 1; row_index < this.filas; row_index++) {
+                    fila = this.getFila(row_index);
+                    //si el radio esta checkeado y es diferente al inicial
+                    if (fila[this.campos[existenRadioButton - 1].nombreCampo] == true && seleccionado.fila != fila.indice) {
+                        this.data[fila.indice].tabla_control.modificado = true;
+
+                    }
+                }
+            }
         }
     }
 
