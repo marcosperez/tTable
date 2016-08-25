@@ -30,7 +30,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.tHeader.style = "width:100%;";
     //Determina si se va a mostrar el boton agregar nueva fila al final de la tabla
     this.mostrarAgregar = true;
-
+    //Determina si se verifica que siempre exista un radio button checkeado
+    this.verificarRadioButton = false;
 
     //Variables de control
     //Establece cual es el radio button que esta actualmente seleccionado si existe
@@ -107,24 +108,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     //Permite aplicar un estilo particular a una fila.
     this.estilo = backgroundColorCallback ? backgroundColorCallback :function (fila) {  };
-
-
-    /**
-     * Description
-     * @method Campo
-     * @return 
-     */
-    function Campo() {
-        this.id = "";
-        this.valor;
-        this.nombre;
-        this.fila;
-        this.columna;
-    }
-
     /**
      * Description
      * @method default_get_campo
+     * Metodo basico que define como se crea un campo def general. Puede ser sobrescritar por otra funcion del usuario
      * @param {} nombreTabla
      * @param {} id
      * @param {} nro_campo_tipo
@@ -146,8 +133,22 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     /**
      * Description
-     * @method agregar_fila
-     * @param {} valores_campos
+     * Clase basica que contiene los datos de una columna. Es usado como parametro en varias funciones.
+     * @method Campo
+     * @return
+     */
+    function Campo() {
+        this.id = "";
+        this.valor;
+        this.nombre;
+        this.fila;
+        this.columna;
+    }
+
+    /**
+     * Description
+     * @method agregar_fila: Permite mostrar filas, diferencia entre filas que vienen de la BD y filas nuevas a agregar.
+     * @param {} valores_campos : valores actuales de los campos junto a sus camposHide y variables de control.
      * @return 
      */
     function agregar_fila(valores_campos) {
@@ -160,12 +161,13 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var index_cell = 0;
 
         //Definimos la funcion de generacion del campo
-
+        //Recorremos todos los campos
         for (; index_cell < this.campos.length; index_cell++) {
             celdas[index_cell] = row.insertCell(index_cell);
             valores_campos[index_cell].fila = this.filas;
             celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.filas + '_columna_' + index_cell
 
+            //En caso de ser una fila que viene de la BD utilizamos el metodo getHTML para mostrar su contenido
             if (valores_campos[this.columnas] && !valores_campos[this.columnas + 1]) {
                 if (this.campos[index_cell].get_html) {
 
@@ -182,7 +184,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
             } else {
-
+            //En caso de que el contenido de la celda no sea un html basico utilizamos el metodo getCampo para permitir su edicion.
                 if (this.campos[index_cell].radioButton) {
                     //Definimos la funcion para los radio button.
                     this.campos[index_cell].get_campo = this.campos[index_cell].get_campo ?
@@ -201,7 +203,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
                 } else {
                     //Verificiamos que exista la funcion get_Campo
-
+                    //Utilizamos la funcion get_campo para mostrar un campo editable para el campo
                     this.campos[index_cell].get_campo = this.campos[index_cell].get_campo ?
                         this.campos[index_cell].get_campo :
                         default_get_campo;
@@ -223,15 +225,9 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 }
             }
 
-
-            //Establecemos el ancho de la columna
-            //if (this.campos[index_cell].width)
-            //    celdas[index_cell].style.width = this.campos[index_cell].width;
-            //alinear
+            //alinear si se definio alineado para el campo en cuestion.
             if (this.campos[index_cell].align)
                 celdas[index_cell].style.textAlign = this.campos[index_cell].align;
-
-
 
         }
 
@@ -262,12 +258,6 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
         }
 
-        //Agregamos valores oculos de control
-        /*this.tabla_control.push({
-            existeEnBd: valores_campos[this.columnas]
-            , modificado: valores_campos[this.columnas + 1]
-            , eliminado: valores_campos[this.columnas + 2]
-        });*/
 
         if (!this.data[this.filas]) this.data[this.filas] = {};
         this.data[this.filas].tabla_control = {
@@ -285,11 +275,6 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         var row = table.insertRow(table.rows.length);
 
-        //var cell1 = row.insertCell(0);
-        //cell1.colSpan = index_cell+1;
-        //cell1.innerHTML = '<center><img border="0" onclick="' + this.nombreTabla + '.agregar_espacios_en_blanco_dir()" src="/FW/image/icons/agregar.png" title="editar" style="cursor:pointer"/></center>';
-
-
         campos_head.resize("header_tbl_" + this.nombreTabla, "campos_tb_" + this.nombreTabla);
 
     }
@@ -297,12 +282,14 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     /**
      * Description
      * @method agregar_espacios_en_blanco_dir
+     * Permite agregar una nueva fila en blanco
      * @return 
      */
     function agregar_espacios_en_blanco_dir() {
         var row_index = 0
             , cell_index = 0;
         var valores_campos = [];
+        //Verifica si existen radio button y checkea el primero.
         for (cell_index = 0; cell_index < this.campos.length; cell_index++) {
             if (this.indexReal(this.filas) == 1 && this.campos[cell_index].radioButton) {
                 valores_campos[cell_index] = {
@@ -321,8 +308,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 }
         }
 
+        //Configuramos los campos de control para filas nuevas
         //Determina si el valor viene de la base de datos
-
         valores_campos[cell_index] = false;
         //Determina si el valor fue modificado
         valores_campos[cell_index + 1] = false;
@@ -330,62 +317,44 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         valores_campos[cell_index + 2] = false;
 
 
+        //agregamos la fila a la tabla
         this.agregar_fila(valores_campos);
         this.disableColumns(columnasADeshabilitar, estadoDeshabilitar);
 
         this.resize()
-        //campos_head.resize("header_tbl_" + this.nombreTabla, "campos_tb_" + this.nombreTabla);
     }
 
 
     /**
      * Description
      * @method eliminar_fila
+     * Oculta la fila pasada como parametro. Este indice tiene en cuenta las filas ocultas.
      * @param {} row_index
      * @return 
      */
     function eliminar_fila(row_index) {
-
-        if (this.tieneRadiobuttonSeleccionado(row_index)) {
+        //En caso de que existan radiobuttons, se verifica que no se intente eliminar un radio button checkeado.
+        if (this.verificarRadioButton && this.tieneRadiobuttonSeleccionado(row_index)) {
             alert("No se puede eliminar una fila activa");
         } else {
-
-
             this.data[row_index].tabla_control.eliminado = true;
             var tabla = $('campos_tb_' + this.nombreTabla);
             var fila = tabla.rows[row_index];
             if (this.data[row_index].tabla_control.existeEnBd) {
                 this.eliminar(this.getFila(row_index));
-            }
+        }
 
             //Ocultamos la fila que se va a eliminar
-
             fila.style.display = fila.style.display === 'none' ? 'table-row' : 'none';
+            this.resize();
 
-            //fila.style.visibility = "hidden";
-            //colBody.childElements()[i]
-            //Coloreamos las filas siguientes a la que se borro.
-            /*var row;
-
-            for (var index = parseInt(row_index) + 1; tabla.rows.length - 1 > index; index++) {
-                row = tabla.rows[index];
-                this.estilo(row);
-            }*/
-
-            //campos_head.resize("header_tbl_" + this.nombreTabla, "campos_tb_" + this.nombreTabla);
-            this.resize()
-
-
-            //Coloreamos la fila que se borro.
-            /*for (var index = 0; index < fila.cells.length; index++) {
-            fila.cells[index].style.backgroundColor = '#F08080';
-            }*/
         }
     }
 
     /**
      * Description
      * @method tieneRadiobuttonSeleccionado
+     * Verifica si existen radios button en una fila.
      * @param {} index_row
      * @return valor
      */
