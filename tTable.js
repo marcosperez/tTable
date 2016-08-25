@@ -106,6 +106,26 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         return true;
     };
 
+     /**
+     * Description
+     * Valida que todas las filas cumplan con la funcion de validacion.
+     * @method validar
+     * @return Literal
+     */
+    function validar() {
+        var resultado = true;
+
+        for (var row_index = 1; row_index < this.filas; row_index++) {
+            //Si NO es valido retornamos false
+            var fila = this.getFila(row_index)
+            if (!this.validacion(fila) && !this.data[row_index].tabla_control.eliminado) {
+                return false
+            }
+        }
+
+        return true;
+    }
+
     //Permite aplicar un estilo particular a una fila.
     this.estilo = backgroundColorCallback ? backgroundColorCallback :function (fila) {  };
     /**
@@ -494,28 +514,14 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
 
-    /**
-     * Description
-     * @method validar
-     * @return Literal
-     */
-    function validar() {
-        var resultado = true;
 
-        for (var row_index = 1; row_index < this.filas; row_index++) {
-            //Si NO es valido retornamos false
-            var fila = this.getFila(row_index)
-            if (!this.validacion(fila) && !this.data[row_index].tabla_control.eliminado) {
-                return false
-            }
-        }
-
-        return true;
-    }
 
     /**
      * Description
      * @method generarXML
+     * Genera un xml segun los campos de control de la tabla.
+     * Ejemplo, define una accion (modificar,eliminar,agregar) y los campos de la fila teniendo encuenta campos hide y anteriores a la modificacion.
+     * <tag accion='modificar' id_cire_com_detalle='2' id_cire_com_detalleAnterior='2' />
      * @param {} tag
      * @return strXML
      */
@@ -565,6 +571,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     /**
      * Description
      * @method obtenerValoresXML
+     * Recupera todos los campos de la filta y los parsea a xml para ser incertados en el generarXML.
      * @param {} fila
      * @return valoresXML
      */
@@ -600,58 +607,6 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         return valoresXML;
 
-    }
-
-    /**
-     * Description
-     * @method funcionRadioButton
-     * @param {} c
-     * @return BinaryExpression
-     */
-    function funcionRadioButton(c) {
-        var stringRadio = "";
-        if (c.valor == true) {
-            stringRadio += 'true" checked>';
-            c.fila;
-            table.radioSeleccionadoCampo = c;
-        } else {
-            stringRadio += 'false">';
-        }
-
-        return '<input type="radio"  name="radiobutton" value="' + stringRadio + '<br>';
-    }
-
-
-
-    /**
-     * Description
-     * @method click_check
-     * @param {} fila
-     * @return 
-     */
-    this.click_check = function (fila) {
-
-        this.data[fila].tabla_control.modificado = true;
-    }
-
-    /**
-     * Description
-     * @method funcionCheckBox
-     * @param {} check
-     * @param {} nombreTabla
-     * @return strHtml
-     */
-    function funcionCheckBox(check, nombreTabla) {
-        var stringCheck = "";
-
-        if (check.valor == true)
-            stringCheck += 'true" checked>';
-        else
-            stringCheck += 'false">';
-        //
-        var strHtml = '<input type="checkbox" onclick="' + nombreTabla + '.click_check(' + check.fila + ')" name="vehicle" value="' + stringCheck;
-
-        return strHtml;
     }
 
     /**
@@ -1320,7 +1275,44 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     }
 
 
-    /************************************** UTILES
+    /************************************** UTILES ***********************************************************************/
+
+
+    /*********************CHECKBOX *************/
+     /**
+     * Description
+     * Especifica que check fue marcado.
+     * @method click_check
+     * @param {} fila
+     * @return
+     */
+    this.click_check = function (fila) {
+        this.data[fila].tabla_control.modificado = true;
+    }
+
+    /**
+     * Description
+     * @method funcionCheckBox
+     * @param {} check
+     * @param {} nombreTabla
+     * @return strHtml
+     */
+    function funcionCheckBox(check, nombreTabla) {
+        var stringCheck = "";
+
+        if (check.valor == true)
+            stringCheck += 'true" checked>';
+        else
+            stringCheck += 'false">';
+        //
+        var strHtml = '<input type="checkbox" onclick="' + nombreTabla + '.click_check(' + check.fila + ')" name="vehicle" value="' + stringCheck;
+
+        return strHtml;
+    }
+
+
+    /*********************RADIOBUTTON *************/
+
     /**
      * Description
      * @method tieneRadiobuttonSeleccionado
@@ -1389,6 +1381,25 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 }
             }
         }
+    }
+    /**
+     * Description
+     * @method funcionRadioButton
+     * Genera un radio button
+     * @param {} c
+     * @return BinaryExpression
+     */
+    function funcionRadioButton(c) {
+        var stringRadio = "";
+        if (c.valor == true) {
+            stringRadio += 'true" checked>';
+            c.fila;
+            table.radioSeleccionadoCampo = c;
+        } else {
+            stringRadio += 'false">';
+        }
+
+        return '<input type="radio"  name="radiobutton" value="' + stringRadio + '<br>';
     }
 
 }
