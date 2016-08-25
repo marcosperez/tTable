@@ -1,85 +1,98 @@
 /**
- * Description
+ * Metodo que crea el objeto basico tTable. Los parametros son opcionales y pueden ser pasados luego de crearla.
  * @method tTable
- * @param {} nombreTabla
- * @param {} filtroXML
- * @param {} cabeceras
- * @param {} campos
- * @param {} callbackValidacion
- * @param {} callbackEliminar
- * @param {} callbackModificar
- * @param {} backgroundColorCallback
- * @param {} callbackOnComplete
  * @return 
  */
 function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, callbackEliminar, callbackModificar, backgroundColorCallback, callbackOnComplete) {
 
     var table = this;
+    //es el nombre de la tabla y el id del div contenedor. Todo lo relacionado a la tabla lo utiliza
     this.nombreTabla = nombreTabla
+    //Titulos que se van a colocar en la tabla, debe coincidir con la cantidad de campos.
     this.cabeceras = cabeceras;
+    //campos que se van a mostrar, es una representacion json de varios parametros posibles.
     this.campos = campos;
+    //Campos que se van a cargar desde el resultado de base de datos pero no se van a mostrar en la tabla
     this.camposHide = [];
+    // Representa la consulta xml que va a cargar de datos la tabla
     this.filtroXML = filtroXML;
+    //Filtro where aplicable a la consulta principal de la tabla
     this.filtroWhere = '';
-    this.radioSeleccionadoCampo = "";
-    this.filas = 0;
-    this.columnas = 0;
-    this.async = false;
-    this.height = 100 + 'px';
+    //Determina si las filas de la tabla son editables
     this.editable = true;
+    //Determina si las filas de la tabla son eliminables
     this.eliminable = true;
+    //Define el estilo del cuerpo de la tabla y otrs posibles parametros.
     this.tBody = {};
     this.tBody.style = "";
+    //Define el estilo de las cabeceras de la tabla y otros posibles parametros
     this.tHeader = {};
     this.tHeader.style = "width:100%;";
+    //Determina si se va a mostrar el boton agregar nueva fila al final de la tabla
     this.mostrarAgregar = true;
-    //Color celdas
-    this.color1 = '#FFFFFF';
-    this.color2 = '#F4F4F4';
+
+
+    //Variables de control
+    //Establece cual es el radio button que esta actualmente seleccionado si existe
+    this.radioSeleccionadoCampo = "";
+    //Cantidad de filas totales de la tabla visibles e invisibles
+    this.filas = 0;
+    //Cantidad de columnas de la tabla, generalmente igual a la cantidad de campos
+    this.columnas = 0;
+    //determina si la tabla es asincronica, es true por defecto
+    this.async = true;
+    //Contiene los datos de la tabla en memoria para ordenarlos y almacenar valores ocultos y de control
     this.data = [];
+    //Determina los cambios que existieron en la tabla
+    this.tabla_control = []
+    //Permite almacenar los valores anteriores a una modificacion de una fila.
+    var modifiedValues = [];
 
-    this.table_load_html = table_load_html; //Genera e inserta el codigo HTML que dibuja el control
 
+    //Metodos de la tabla
+    //Genera e inserta el codigo HTML que dibuja el control
+    this.table_load_html = table_load_html;
     this.agregar_espacios_en_blanco_dir = agregar_espacios_en_blanco_dir;
-
-    //Metodos del tTable
     this.validar = validar;
     this.getFila = getFila;
     this.modificar_fila = modificar_fila;
     this.generarXML = generarXML;
-    this.funcionRadioButtonTable = funcionRadioButton;
-    this.funcionCheckBox = funcionCheckBox;
-    this.existenRadioButton = existenRadioButton;
-    this.actualizarRadiobutton = actualizarRadiobutton;
     this.getCelda = getCelda;
     this.indexReal = indexReal;
     this.disableColumns = disableColumns;
     this.refresh = refresh;
     this.addOnComplete = addOnComplete;
     this.onComplete = onComplete;
-    this.async = true;
-
-
-    //Variable de control
-    this.tabla_control = []
-    var modifiedValues = [];
-    var tablas = [];
-    this.agregar_fila = agregar_fila;
-    this.eliminar_fila = eliminar_fila;
-    this.funcionesOnComplete = [];
-    var lista_rs;
-
     this.getValor = getValor;
     this.setValor = setValor;
     this.modCelda = modCelda;
 
+    //Metodos radio button
+    this.funcionRadioButtonTable = funcionRadioButton;
+    this.existenRadioButton = existenRadioButton;
+    this.actualizarRadiobutton = actualizarRadiobutton;
+
+    //Metodos checkbox
+    this.funcionCheckBox = funcionCheckBox;
+
+    //Variable de control
+    this.agregar_fila = agregar_fila;
+    this.eliminar_fila = eliminar_fila;
+    this.funcionesOnComplete = [];
+
     //Metodos definidos por el usuario
+    //Permtie especificar una funcion que se va a lanzar cuando se elimina una fila. Recibe como parametro la fila junto a sus parametros de control y camposHide.
     this.eliminar = callbackEliminar ? callbackEliminar : function (fila) { };
+
+    //Permtie especificar una funcion que se va a lanzar cuando se modifique una fila. Recibe como parametro la fila junto a sus parametros de control y camposHide.
     this.modificar = callbackModificar ? callbackModificar : function (fila) { };
+
+    //Permtie especificar una funcion que se va a lanzar cuando se llame al validar de la tabla, se ejecuta una vez por cada fila.
+    //Recibe como parametro la fila junto a sus parametros de control y camposHide.
     this.validacion = callbackValidacion ? callbackValidacion : function (fila) {
         //validacion por defecto
         for (var index_colum = 0; index_colum < this.columnas; index_colum++) {
-            if (!this.admiteNulo(this.campos[index_colum]) &&
+            if (!this.campos[index_colum].nulleable &&
                 !this.campos[index_colum].radioButton &&
                 !this.campos[index_colum].checkBox &&
                 fila[this.campos[index_colum].nombreCampo] == "" &&
@@ -91,35 +104,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         return true;
     };
-    this.estilo = backgroundColorCallback ? backgroundColorCallback :
 
-        function (fila) {
-            /*
-            if (fila.style.display == 'none') return;
-            var colorPintar = this.indexReal(fila.rowIndex) % 2 ? this.color1 : this.color2;
+    //Permite aplicar un estilo particular a una fila.
+    this.estilo = backgroundColorCallback ? backgroundColorCallback :function (fila) {  };
 
-            //Coloreamos la fila
-            for (var index = 0; index < fila.cells.length; index++) {
-                fila.cells[index].style.backgroundColor = colorPintar;
-            }
-
-            return true;*/
-        };
-
-    //this.tabla_ids = [];
-
-    /**
-     * Description
-     * @method admiteNulo
-     * @param {} campo
-     * @return Literal
-     */
-    this.admiteNulo = function (campo) {
-        if (campo.nulleable)
-            return true;
-
-        return false;
-    }
 
     /**
      * Description
@@ -993,32 +981,19 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      * @return 
      */
     this.table_load_html_ascy = function (tabla) {
-
+        //Reinicializacion de los parametros basico de la tabla
         tabla.columnas = 0;
         tabla.filas = 0;
         tabla.radioSeleccionadoCampo = "";
-        //tabla.tabla_control = [];
 
-        //tabla = this;
         var rs = new tRS();
-        //
-
-        //Para uso ascincronico
-        if (!lista_rs)
-            lista_rs = [];
-
-
-        lista_rs[tabla.nombreTabla] = rs;
         rs.async = true;
+
         nvFW.bloqueo_activar($(tabla.nombreTabla), 'cargando-' + tabla.nombreTabla);
-        /**
-         * Description
-         * @method onComplete
-         * @return 
-         */
+
         rs.onComplete = function () {
             tabla.data = [];
-            while (!lista_rs[tabla.nombreTabla].eof()) {
+            while (!rs.eof()) {
                 var fila = {};
                 for (var index_campos = 0; index_campos < tabla.campos.length; index_campos++) {
 
@@ -1045,9 +1020,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
             nvFW.bloqueo_desactivar($(tabla.nombreTabla), 'cargando-' + tabla.nombreTabla);
+
             //Lanza el metodo onComplete en caso de estar definido.
+
             tabla.onComplete(tabla);
-        }
+        }.bind(this)
 
         rs.open(tabla.filtroXML, '', tabla.filtroWhere, '', '');
 
