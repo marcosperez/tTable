@@ -79,7 +79,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Variable de control
     this.agregar_fila = agregar_fila;
     this.eliminar_fila = eliminar_fila;
+    //Grupo de funciones que se ejecutan cuando se completa la visibilizacion de la tabla.
     this.funcionesOnComplete = [];
+
+    /* Determina si la columna tiene que ser deabilitada para edicion*/
+    var columnasADeshabilitar = [];
+    var estadoDeshabilitar = false;
 
     //Metodos definidos por el usuario
     //Permtie especificar una funcion que se va a lanzar cuando se elimina una fila. Recibe como parametro la fila junto a sus parametros de control y camposHide.
@@ -339,6 +344,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         //agregamos la fila a la tabla
         this.agregar_fila(valores_campos);
+
+        //En caso de que se deba desabilitar una columna esta se bloquea.
         this.disableColumns(columnasADeshabilitar, estadoDeshabilitar);
 
         this.resize()
@@ -612,6 +619,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     /**
      * Description
      * @method indexReal
+     * Calcula el numero de fila de una fila descontando las filas ocultas. Obtenemos el numero de fila visible en pantalla.
      * @param {} index
      * @return index
      */
@@ -627,12 +635,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         return index;
     }
 
-    var columnasADeshabilitar = [];
-    var estadoDeshabilitar = false;
+
 
     /**
      * Description
      * @method disableColumns
+     * Bloquea todos los campos de una columna.
      * @param {} nombresColumnas
      * @param {} estado
      * @return 
@@ -678,31 +686,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     }
 
 
-    /**
-     * Description
-     * @method validarRadioButtonSeleccionado
-     * @param {} nombreCampo
-     * @return Literal
-     */
-    this.validarRadioButtonSeleccionado = function (nombreCampo) {
-        var contador = 0;
-        //
-        for (var row_index = 1; row_index < this.filas; row_index++) {
-            if (!this.data[row_index].tabla_control.eliminado) {
-                contador++;
-                var fila = this.getFila(row_index);
-                if (fila[nombreCampo])
-                    return true;
-            }
-        }
-        //en caso de que no halla filas
-        if (contador == 0)
-            return true;
 
-        //Si existe por lo menos una fila y no tiene radiobutton activado devolvemos false
-        return false;
-
-    }
 
     /**
      * Description
@@ -1401,5 +1385,32 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         return '<input type="radio"  name="radiobutton" value="' + stringRadio + '<br>';
     }
+
+    /**
+     * Description
+     * Valida que cuando exista un radio button siempre tiene q existir al menos uno seleccionado.
+     * @method validarRadioButtonSeleccionado
+     * @param {} nombreCampo
+     * @return Literal
+     */
+    /*this.validarRadioButtonSeleccionado = function (nombreCampo) {
+        var contador = 0;
+        //
+        for (var row_index = 1; row_index < this.filas; row_index++) {
+            if (!this.data[row_index].tabla_control.eliminado) {
+                contador++;
+                var fila = this.getFila(row_index);
+                if (fila[nombreCampo])
+                    return true;
+            }
+        }
+        //en caso de que no halla filas
+        if (contador == 0)
+            return true;
+
+        //Si existe por lo menos una fila y no tiene radiobutton activado devolvemos false
+        return false;
+
+    }*/
 
 }
