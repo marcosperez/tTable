@@ -20,7 +20,14 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         enDB:(Default False) Si el campo def existe en la Base de datos.
         width: Porcentaje que se le va a asignar a la columna
         campoDefOpciones: Genera un campo def con las opciones pasadas (por defecto enDB:false)
-                EJ:{ filtroXML: nvFW.pageContents.filtroEstados, nro_campo_tipo: 1 },
+                EJ:
+                {
+                    nombreCampo: "com_tipo_origen",
+                    id: "nro_com_tipo_origen",
+        ----------> campoDefOpciones: { filtroXML: nvFW.pageContents.filtroTipos, nro_campo_tipo: 1, cacheControl: true },
+                     width: "18%"
+                    , align: "center",nulleable:true,ordenable:true
+                }
 
         align: "center": Determina la alineacion del campo en las filas
         nulleable: por defecto false : Determina si el campo admite valores nulos.
