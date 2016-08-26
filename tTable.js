@@ -79,7 +79,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Establece cual es el radio button que esta actualmente seleccionado si existe
     this.radioSeleccionadoCampo = "";
     //Cantidad de filas totales de la tabla visibles e invisibles
-    this.filas = 0;
+    this.cantFilas = 0;
     //Cantidad de columnas de la tabla, generalmente igual a la cantidad de campos
     this.columnas = 0;
     //determina si la tabla es asincronica, es true por defecto
@@ -162,7 +162,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     function validar() {
         var resultado = true;
 
-        for (var row_index = 1; row_index < this.filas; row_index++) {
+        for (var row_index = 1; row_index < this.cantFilas; row_index++) {
             //Si NO es valido retornamos false
             var fila = this.getFila(row_index)
             if (!this.validacion(fila) && !this.data[row_index].tabla_control.eliminado) {
@@ -234,7 +234,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var table = $('campos_tb_' + this.nombreTabla);
         table.deleteRow(table.rows.length - 1);
         var row = table.insertRow(table.rows.length);
-        row.id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.filas;
+        row.id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.cantFilas;
 
         var celdas = [];
         var index_cell = 0;
@@ -243,8 +243,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         //Recorremos todos los campos
         for (; index_cell < this.campos.length; index_cell++) {
             celdas[index_cell] = row.insertCell(index_cell);
-            valores_campos[index_cell].fila = this.filas;
-            celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.filas + '_columna_' + index_cell
+            valores_campos[index_cell].fila = this.cantFilas;
+            celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.cantFilas + '_columna_' + index_cell
 
             //En caso de ser una fila que viene de la BD utilizamos el metodo getHTML para mostrar su contenido
             if (valores_campos[this.columnas] && !valores_campos[this.columnas + 1]) {
@@ -277,7 +277,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                         this.campos[index_cell].get_campo : funcionCheckBox;
 
                     celdas[index_cell].innerHTML = this.campos[index_cell].get_campo({
-                        fila: this.filas
+                        fila: this.cantFilas
                     }, this.nombreTabla);
 
                 } else {
@@ -289,11 +289,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     var esEditable = this.campos[index_cell].editable === undefined || this.campos[index_cell].editable === true;
                     if (esEditable) {
 
-                        this.campos[index_cell].get_campo(this.nombreTabla, '_fila_' + this.filas + '_columna_' + index_cell);
+                        this.campos[index_cell].get_campo(this.nombreTabla, '_fila_' + this.cantFilas + '_columna_' + index_cell);
                         if (this.campos[index_cell].valorDefecto)
-                            campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.filas + '_columna_' + index_cell, this.campos[index_cell].valorDefecto);
+                            campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.cantFilas + '_columna_' + index_cell, this.campos[index_cell].valorDefecto);
                         if (valores_campos[index_cell].valor && valores_campos[index_cell].valor != "") {
-                            campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.filas + '_columna_' + index_cell, valores_campos[index_cell].valor);
+                            campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.cantFilas + '_columna_' + index_cell, valores_campos[index_cell].valor);
                         }
                     }
                     else {
@@ -314,8 +314,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         //Borrar
         if (this.eliminable) {
             celdas[index_cell] = row.insertCell(index_cell);
-            celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.filas + '_columna_' + (index_cell)
-            celdas[index_cell].innerHTML = '<center><img border="0"  onclick="' + this.nombreTabla + '.eliminar_fila(\'' + this.filas + '\')" src="/FW/image/icons/eliminar.png" title="eliminar" style="cursor:pointer" /></center>';
+            celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.cantFilas + '_columna_' + (index_cell)
+            celdas[index_cell].innerHTML = '<center><img border="0"  onclick="' + this.nombreTabla + '.eliminar_fila(\'' + this.cantFilas + '\')" src="/FW/image/icons/eliminar.png" title="eliminar" style="cursor:pointer" /></center>';
             //celdas[index_cell].style.width = "12.5%";
             celdas[index_cell].style.align = "center";
 
@@ -327,8 +327,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         if (this.editable) {
             if (valores_campos[this.columnas] + 1) {
                 celdas[index_cell] = row.insertCell(index_cell);
-                celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + (this.filas - 1) + '_columna_' + (index_cell)
-                celdas[index_cell].innerHTML = '<center><img border="0" onclick="' + this.nombreTabla + '.modificar_fila(\'' + this.filas + '\')"src="/FW/image/icons/editar.png" title="editar" style="cursor:pointer"/></center>';
+                celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + (this.cantFilas - 1) + '_columna_' + (index_cell)
+                celdas[index_cell].innerHTML = '<center><img border="0" onclick="' + this.nombreTabla + '.modificar_fila(\'' + this.cantFilas + '\')"src="/FW/image/icons/editar.png" title="editar" style="cursor:pointer"/></center>';
                 //celdas[index_cell].style.width = "12.5%";
                 celdas[index_cell].style.align = "center";
             } else {
@@ -337,17 +337,17 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         }
 
 
-        if (!this.data[this.filas]) this.data[this.filas] = {};
-        this.data[this.filas].tabla_control = {
+        if (!this.data[this.cantFilas]) this.data[this.cantFilas] = {};
+        this.data[this.cantFilas].tabla_control = {
             existeEnBd: valores_campos[this.columnas]
             , modificado: valores_campos[this.columnas + 1]
             , eliminado: valores_campos[this.columnas + 2]
         }
 
-        if (this.data[this.filas].tabla_control.eliminado)
-            this.eliminar_fila(this.filas)
+        if (this.data[this.cantFilas].tabla_control.eliminado)
+            this.eliminar_fila(this.cantFilas)
 
-        this.filas++;
+        this.cantFilas++;
 
         this.estilo(row);
 
@@ -369,20 +369,23 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var valores_campos = [];
         //Verifica si existen radio button y checkea el primero.
         for (cell_index = 0; cell_index < this.campos.length; cell_index++) {
-            if (this.indexReal(this.filas) == 1 && this.campos[cell_index].radioButton) {
+            if (this.indexReal(this.cantFilas) == 1 && this.campos[cell_index].radioButton) {
                 valores_campos[cell_index] = {
                     valor: true
                     , columna: cell_index
-                    , fila: this.filas
+                    , fila: this.cantFilas
                 };
             } else {
-                valores_campos[cell_index] = "";
+                valores_campos[cell_index] = {
+                    columna: cell_index
+                                                , fila: this.cantFilas
+                };
             }
             if (this.campos[cell_index].checkBox)
                 valores_campos[cell_index] = {
                     valor: true
                     , columna: cell_index
-                    , fila: this.filas
+                    , fila: this.cantFilas
                 }
         }
 
@@ -592,7 +595,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var strXML = "";
 
         //{ existeEnBd: valores_campos[this.columnas], modificado: valores_campos[this.columnas + 1], eliminado: valores_campos[this.columnas + 2] }
-        for (var row_index = 1; row_index < this.filas; row_index++) {
+        for (var row_index = 1; row_index < this.cantFilas; row_index++) {
             //Recorremos todas las filas
             //Obtenemos la fila con indice row_index
             var fila = this.getFila(row_index);
@@ -651,6 +654,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 valoresXML += fila[campoNombre] ? "1" : "0";
                 valoresXML += "' "
             } else {
+                var valor = fila[campoNombre] ? fila[campoNombre] : "";
                 valoresXML += campoNombre + "='" + fila[campoNombre] + "' ";
                 valoresXML += campoNombre + "Anterior='" + aux + "' ";
             }
@@ -660,7 +664,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
         }
         for (var index_campo = 0; index_campo < this.camposHide.length; index_campo++) {
-            var campoNombre = this.camposHide[index_campo].nombreCampo;
+            var campoNombre = this.camposHide[index_campo].nombreCampo ? this.camposHide[index_campo].nombreCampo : "";
             valoresXML += campoNombre + "='" + fila[campoNombre] + "' ";
         }
 
@@ -892,7 +896,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.table_load_html_ascy = function (tabla) {
         //Reinicializacion de los parametros basico de la tabla
         tabla.columnas = 0;
-        tabla.filas = 0;
+        tabla.cantFilas = 0;
         tabla.radioSeleccionadoCampo = "";
 
         var rs = new tRS();
@@ -906,11 +910,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 var fila = {};
                 //Para cada campo recuperamos su valor y su id correspondiente en caso de contar con uno.
                 for (var index_campos = 0; index_campos < tabla.campos.length; index_campos++) {
-
-                    fila[tabla.campos[index_campos].nombreCampo] = rs.getdata(tabla.campos[index_campos].nombreCampo);
+                    var valor_campo = rs.getdata(tabla.campos[index_campos].nombreCampo);
+                    fila[tabla.campos[index_campos].nombreCampo] =valor_campo ?valor_campo:"";
                     if (tabla.campos[index_campos].id) {
-
-                        fila[tabla.campos[index_campos].id] = rs.getdata(tabla.campos[index_campos].id);
+                        var valor_id = rs.getdata(tabla.campos[index_campos].id);
+                        fila[tabla.campos[index_campos].id] = valor_id ? valor_id : "";
                     }
                 }
 
@@ -951,7 +955,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.table_load_html_sync = function (tabla) {
         /*
         this.columnas = 0;
-        this.filas = 0;
+        this.cantFilas = 0;
         this.radioSeleccionadoCampo = "";
         this.tabla_control = [];
 
@@ -1029,7 +1033,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.mostrar_tabla = function (tabla) {
         this.removeCamposDef();
 
-        tabla.filas = 1;
+        tabla.cantFilas = 1;
         tabla.columnas = 0;
 
 
@@ -1375,7 +1379,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             var seleccionado = this.radioSeleccionadoCampo;
 
             if (seleccionado) {
-                for (var row_index = 1; row_index < this.filas; row_index++) {
+                for (var row_index = 1; row_index < this.cantFilas; row_index++) {
                     fila = this.getFila(row_index);
                     //si el radio esta checkeado y es diferente al inicial
                     if (fila[this.campos[seleccionado.columna].nombreCampo] == true && (seleccionado.fila) != fila.indice) {
@@ -1385,7 +1389,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     }
                 }
             } else {
-                for (var row_index = 1; row_index < this.filas; row_index++) {
+                for (var row_index = 1; row_index < this.cantFilas; row_index++) {
                     fila = this.getFila(row_index);
                     //si el radio esta checkeado y es diferente al inicial
                     if (fila[this.campos[existenRadioButton - 1].nombreCampo] == true && seleccionado.fila != fila.indice) {
