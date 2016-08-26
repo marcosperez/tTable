@@ -81,13 +81,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Cantidad de filas totales de la tabla visibles e invisibles
     this.cantFilas = 0;
     //Cantidad de columnas de la tabla, generalmente igual a la cantidad de campos
-    this.columnas = 0;
+    this.cantColumnas = 0;
     //determina si la tabla es asincronica, es true por defecto
     this.async = true;
     //Contiene los datos de la tabla en memoria para ordenarlos y almacenar valores ocultos y de control
     this.data = [];
-    //Determina los cambios que existieron en la tabla
-    this.tabla_control = []
     //Permite almacenar los valores anteriores a una modificacion de una fila.
     var modifiedValues = [];
 
@@ -139,7 +137,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Recibe como parametro la fila junto a sus parametros de control y camposHide.
     this.validacion = callbackValidacion ? callbackValidacion : function (fila) {
         //validacion por defecto
-        for (var index_colum = 0; index_colum < this.columnas; index_colum++) {
+        for (var index_colum = 0; index_colum < this.cantColumnas; index_colum++) {
             if (!this.campos[index_colum].nulleable &&
                 !this.campos[index_colum].radioButton &&
                 !this.campos[index_colum].checkBox &&
@@ -247,7 +245,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + this.cantFilas + '_columna_' + index_cell
 
             //En caso de ser una fila que viene de la BD utilizamos el metodo getHTML para mostrar su contenido
-            if (valores_campos[this.columnas] && !valores_campos[this.columnas + 1]) {
+            if (valores_campos[this.cantColumnas] && !valores_campos[this.cantColumnas + 1]) {
                 if (this.campos[index_cell].get_html) {
 
                     celdas[index_cell].innerHTML = this.campos[index_cell].get_html(valores_campos[index_cell], this.nombreTabla, valores_campos);
@@ -325,7 +323,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         //Modificar
         //En caso de que sea nuevo no va el boton modificar
         if (this.editable) {
-            if (valores_campos[this.columnas] + 1) {
+            if (valores_campos[this.cantColumnas] + 1) {
                 celdas[index_cell] = row.insertCell(index_cell);
                 celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + (this.cantFilas - 1) + '_columna_' + (index_cell)
                 celdas[index_cell].innerHTML = '<center><img border="0" onclick="' + this.nombreTabla + '.modificar_fila(\'' + this.cantFilas + '\')"src="/FW/image/icons/editar.png" title="editar" style="cursor:pointer"/></center>';
@@ -339,9 +337,9 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         if (!this.data[this.cantFilas]) this.data[this.cantFilas] = {};
         this.data[this.cantFilas].tabla_control = {
-            existeEnBd: valores_campos[this.columnas]
-            , modificado: valores_campos[this.columnas + 1]
-            , eliminado: valores_campos[this.columnas + 2]
+            existeEnBd: valores_campos[this.cantColumnas]
+            , modificado: valores_campos[this.cantColumnas + 1]
+            , eliminado: valores_campos[this.cantColumnas + 2]
         }
 
         if (this.data[this.cantFilas].tabla_control.eliminado)
@@ -451,7 +449,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var fila = $('campos_tb_' + this.nombreTabla).rows[row_index];
         var esUnCampoDef = campos_defs.items[nombreCampoDef] ? true : false;
 
-        for (; index_cell < this.columnas; index_cell++) {
+        for (; index_cell < this.cantColumnas; index_cell++) {
             var celda = fila.cells[index_cell];
             var nombreCampoDef = this.nombreTabla + "_campos_defs" + '_fila_' + row_index + '_columna_' + index_cell;
             var esEditable = this.campos[index_cell].editable === undefined || this.campos[index_cell].editable === true;
@@ -536,7 +534,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 fila_objeto[nombreCampo] = campos_defs.get_value(nombreCampoDef);
 
             } else {
-                if (this.columnas > index_cell)
+                if (this.cantColumnas > index_cell)
                     fila_objeto[nombreCampo] = celda.innerText;
             }
         }
@@ -558,7 +556,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         fila_objeto = {};
 
         //Cargamos los valores de las celdas.
-        for (var index_cell = 0; index_cell < this.columnas; index_cell++) {
+        for (var index_cell = 0; index_cell < this.cantColumnas; index_cell++) {
             fila_objeto = this.getCelda(fila.cells[index_cell], fila_objeto, row_index, index_cell)
         }
 
@@ -594,7 +592,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         var strXML = "";
 
-        //{ existeEnBd: valores_campos[this.columnas], modificado: valores_campos[this.columnas + 1], eliminado: valores_campos[this.columnas + 2] }
+        //{ existeEnBd: valores_campos[this.cantColumnas], modificado: valores_campos[this.cantColumnas + 1], eliminado: valores_campos[this.cantColumnas + 2] }
         for (var row_index = 1; row_index < this.cantFilas; row_index++) {
             //Recorremos todas las filas
             //Obtenemos la fila con indice row_index
@@ -642,7 +640,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var valoresXML = " "
         var aux;
 
-        for (var index_colum = 0; index_colum < this.columnas; index_colum++) {
+        for (var index_colum = 0; index_colum < this.cantColumnas; index_colum++) {
             var campoNombre = this.campos[index_colum].nombreCampo;
             var campoId = this.campos[index_colum].id;
             var esUnRadioButton = this.campos[index_colum].radioButton;
@@ -895,7 +893,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      */
     this.table_load_html_ascy = function (tabla) {
         //Reinicializacion de los parametros basico de la tabla
-        tabla.columnas = 0;
+        tabla.cantColumnas = 0;
         tabla.cantFilas = 0;
         tabla.radioSeleccionadoCampo = "";
 
@@ -954,7 +952,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      */
     this.table_load_html_sync = function (tabla) {
         /*
-        this.columnas = 0;
+        this.cantColumnas = 0;
         this.cantFilas = 0;
         this.radioSeleccionadoCampo = "";
         this.tabla_control = [];
@@ -1034,7 +1032,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         this.removeCamposDef();
 
         tabla.cantFilas = 1;
-        tabla.columnas = 0;
+        tabla.cantColumnas = 0;
 
 
         var fila = {};
@@ -1071,7 +1069,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             srtHtml += '<td style="text-align: center;width:' + tabla.campos[col_index].width + ';">' +
                  ordenHTML +
                 tabla.cabeceras[col_index] + '</td>';
-            tabla.columnas++
+            tabla.cantColumnas++
         }
 
         srtHtml += tabla.eliminable ? '<td style="text-align: center;width:12.5%;">Eliminar</td>' : "";
@@ -1208,7 +1206,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     function setValor(nombreCampo, row_index, valor) {
 
         var fila = $('campos_tb_' + this.nombreTabla).rows[row_index];
-        for (var index_cell = 0; index_cell < this.columnas; index_cell++) {
+        for (var index_cell = 0; index_cell < this.cantColumnas; index_cell++) {
             if (this.campos[index_cell].nombreCampo == nombreCampo) {
                 this.modCelda(fila.cells[index_cell], fila_objeto, row_index, index_cell, valor);
                 break;
@@ -1255,7 +1253,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             if (esUnCampoDef) {
                 campos_defs.set_value(nombreCampoDef, valor);
             } else {
-                if (this.columnas > index_cell)
+                if (this.cantColumnas > index_cell)
                     celda.innerText = valor;
             }
         }
@@ -1358,7 +1356,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      * @return Literal
      */
     function existenRadioButton() {
-        for (var index_colum = 0; index_colum < this.columnas; index_colum++) {
+        for (var index_colum = 0; index_colum < this.cantColumnas; index_colum++) {
             if (this.campos[index_colum].radioButton)
                 return index_colum + 1;
         }
@@ -1423,7 +1421,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.validarRadioButtonSeleccionado = function (nombreCampo) {
         var contador = 0;
         for (var row_index = 1; row_index < this.filas; row_index++) {
-            if (!this.tabla_control[row_index].eliminado) {
+            if (!this.data[row_index].tabla_control.eliminado) {
                 contador++;
                 var fila = this.getFila(row_index);
                 if (fila[nombreCampo])
