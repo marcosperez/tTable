@@ -1420,4 +1420,23 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         return '<input type="radio"  name="radiobutton" value="' + stringRadio + '<br>';
     }
 
+    this.validarRadioButtonSeleccionado = function (nombreCampo) {
+        var contador = 0;
+        for (var row_index = 1; row_index < this.filas; row_index++) {
+            if (!this.tabla_control[row_index].eliminado) {
+                contador++;
+                var fila = this.getFila(row_index);
+                if (fila[nombreCampo])
+                    return true;
+            }
+        }
+        //en caso de que no halla filas
+        if (contador == 0)
+            return true;
+
+        //Si existe por lo menos una fila y no tiene radiobutton activado devolvemos false
+        return false;
+
+    }
+
 }
