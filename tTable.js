@@ -17,8 +17,22 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         nombreCampo: nombreCampo: nombre del campo en la BD
         id: En caso de que tenga un id es el nombre del campo en la base de datos. Usado generalmente para campos defs
         nro_campo_tipo: Tipo de campo def. Por defecto 104
-        enDB: Si el campo def existe en la Base de datos.
+        enDB:(Default False) Si el campo def existe en la Base de datos.
         width: Porcentaje que se le va a asignar a la columna
+        campoDefOpciones: Genera un campo def con las opciones pasadas (por defecto enDB:false)
+                EJ:{ filtroXML: nvFW.pageContents.filtroEstados, nro_campo_tipo: 1 },
+
+        align: "center": Determina la alineacion del campo en las filas
+        nulleable: por defecto false : Determina si el campo admite valores nulos.
+        ordenable: por defecto true : Determina si la columna va a ser ordenable
+        editable: Determina si el campo puede ser editado
+        unico: Determina si el campo es unico
+        //Existen funciones predefinidas para generar radiobuttons y Checkbox aunque se pueden generar personalizadas
+        radioButton: Determina el campo es un radioButton
+        checkOnDelete: Determina si se debe checkear antes de eliminar el campo
+        checkBox: Determina si el campo es un radio button
+
+        PARA MAYOR PERSONALIZACION
         get_html(campo,nombreTabla,arregloValoresFila): Funcion que permite generar un html enriquesido para mostrar el campo.
         get_campo(nombreTabla, id): Definicion personalizada de campo def para cargar
                                     Ejemplo
@@ -30,15 +44,6 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                                                 filtroXML: nvFW.pageContents.filtroEstados,
                                                 target: 'campos_tb_' + nombreTabla + id
                                             });
-        align: "center": Determina la alineacion del campo en las filas
-        nulleable: por defecto false : Determina si el campo admite valores nulos.
-        ordenable: por defecto true : Determina si la columna va a ser ordenable
-        editable: Determina si el campo puede ser editado
-        unico: Determina si el campo es unico
-        //Existen funciones predefinidas para generar radiobuttons y Checkbox aunque se pueden generar personalizadas
-        radioButton: Determina el campo es un radioButton
-        checkOnDelete: Determina si se debe checkear antes de eliminar el campo
-        checkBox: Determina si el campo es un radio button
     */
 
     //Campos que se van a cargar desde el resultado de base de datos pero no se van a mostrar en la tabla
@@ -141,12 +146,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         return true;
     };
 
-     /**
-     * Description
-     * Valida que todas las filas cumplan con la funcion de validacion.
-     * @method validar
-     * @return Literal
-     */
+    /**
+    * Description
+    * Valida que todas las filas cumplan con la funcion de validacion.
+    * @method validar
+    * @return Literal
+    */
     function validar() {
         var resultado = true;
 
@@ -162,7 +167,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     }
 
     //Permite aplicar un estilo particular a una fila.
-    this.estilo = backgroundColorCallback ? backgroundColorCallback :function (fila) {  };
+    this.estilo = backgroundColorCallback ? backgroundColorCallback : function (fila) { };
     /**
      * Description
      * @method default_get_campo
@@ -175,14 +180,26 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      */
     function default_get_campo(nombreTabla, id, nro_campo_tipo, enDB) {
         //var id = '_fila_' + row_index + '_columna_' + index_cell
-        this.nro_campo_tipo = this.nro_campo_tipo ? this.nro_campo_tipo : 104;
-        this.enDB = this.enDB ? this.enDB : false;
+        var opciones;
 
-        campos_defs.add(nombreTabla + "_campos_defs" + id, {
-            nro_campo_tipo: this.nro_campo_tipo
-            , enDB: this.enDB
-            , target: 'campos_tb_' + nombreTabla + id
-        });
+        //En caso de que se hallan definido opciones especiales para el campo def.
+        if (!this.campoDefOpciones) {
+            //Por defecto
+            this.nro_campo_tipo = this.nro_campo_tipo ? this.nro_campo_tipo : 104;
+            this.enDB = this.enDB ? this.enDB : false;
+            opciones = {
+                nro_campo_tipo: this.nro_campo_tipo
+                , enDB: this.enDB
+                , target: 'campos_tb_' + nombreTabla + id
+            };
+
+        } else {
+            opciones = this.campoDefOpciones;
+            opciones.target = 'campos_tb_' + nombreTabla + id;
+            opciones.enDB = opciones.enDB ? opciones.enDB : false;
+        }
+
+        campos_defs.add(nombreTabla + "_campos_defs" + id, opciones);
     }
 
 
@@ -239,7 +256,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
             } else {
-            //En caso de que el contenido de la celda no sea un html basico utilizamos el metodo getCampo para permitir su edicion.
+                //En caso de que el contenido de la celda no sea un html basico utilizamos el metodo getCampo para permitir su edicion.
                 if (this.campos[index_cell].radioButton) {
                     //Definimos la funcion para los radio button.
                     this.campos[index_cell].get_campo = this.campos[index_cell].get_campo ?
@@ -301,7 +318,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         //Modificar
         //En caso de que sea nuevo no va el boton modificar
         if (this.editable) {
-            if (valores_campos[this.columnas]+1) {
+            if (valores_campos[this.columnas] + 1) {
                 celdas[index_cell] = row.insertCell(index_cell);
                 celdas[index_cell].id = 'campos_tb_' + this.nombreTabla + '_fila_' + (this.filas - 1) + '_columna_' + (index_cell)
                 celdas[index_cell].innerHTML = '<center><img border="0" onclick="' + this.nombreTabla + '.modificar_fila(\'' + this.filas + '\')"src="/FW/image/icons/editar.png" title="editar" style="cursor:pointer"/></center>';
@@ -399,7 +416,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
             if (this.data[row_index].tabla_control.existeEnBd) {
                 this.eliminar(this.getFila(row_index));
-        }
+            }
 
             //Ocultamos la fila que se va a eliminar
             fila.style.display = fila.style.display === 'none' ? 'table-row' : 'none';
@@ -1269,13 +1286,13 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
     /*********************CHECKBOX *************/
-     /**
-     * Description
-     * Especifica que check fue marcado.
-     * @method click_check
-     * @param {} fila
-     * @return
-     */
+    /**
+    * Description
+    * Especifica que check fue marcado.
+    * @method click_check
+    * @param {} fila
+    * @return
+    */
     this.click_check = function (fila) {
         this.data[fila].tabla_control.modificado = true;
     }
