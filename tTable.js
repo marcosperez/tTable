@@ -1021,7 +1021,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         var srtHtml =
             '<div style="width:100%;height:100%;overflow:hidden;background-color:white;">' +
             '<div style="overflow:hidden;" id="div_titulos_' + tabla.nombreTabla + '" >' +
-            '<table  style="' + tabla.tHeader.style + '"  id="header_tbl_' + tabla.nombreTabla + '" >  ' +
+            '<table style="' + tabla.tHeader.style + '"  id="header_tbl_' + tabla.nombreTabla + '" >  ' +
             '<tr class="tbLabel">';
 
         for (col_index = 0; col_index < tabla.cabeceras.length; col_index++) {
@@ -1075,8 +1075,13 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
         var table = $('campos_tb_' + tabla.nombreTabla);
-        table.className = "tb1 highlightEven highlightTROver scroll "
-
+        table.className = "tb1 highlightEven highlightTROver scroll"
+        /*
+        //Intento de cambiar el css de forma dinamica para evitar que se coloren filas hidden
+        document.createElement('style')
+        sheet.innerHTML = "#tTableStyle tr[@display=block]:nth-child(odd) {  background-color:  #000;  }"+
+                            " #tTableStyle tr[@display=block]:nth-child(even) {  background-color:  red;  }";
+        document.body.appendChild(sheet);*/
 
         var row = table.insertRow(table.rows.length);
 
