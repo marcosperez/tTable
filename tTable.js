@@ -87,7 +87,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Contiene los datos de la tabla en memoria para ordenarlos y almacenar valores ocultos y de control
     this.data = [];
     //Permite almacenar los valores anteriores a una modificacion de una fila.
-    var modifiedValues = [];
+    this.valoresAnteriores = [];
 
 
     //Metodos de la tabla
@@ -463,7 +463,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 var valor = celda.idCampo;
             } else {
                 var valor = celda.innerText;
-                modifiedValues[nombreCampoDef] = valor;
+                this.valoresAnteriores[nombreCampoDef] = valor;
             }
 
             if (!esUnRadiobutton && !esUnico && esEditable) {
@@ -644,7 +644,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             var campoNombre = this.campos[index_colum].nombreCampo;
             var campoId = this.campos[index_colum].id;
             var esUnRadioButton = this.campos[index_colum].radioButton;
-            aux = modifiedValues[this.nombreTabla + "_campos_defs" + '_fila_' + fila.indice + '_columna_' + index_colum];
+            aux = this.valoresAnteriores[this.nombreTabla + "_campos_defs" + '_fila_' + fila.indice + '_columna_' + index_colum];
             aux = aux ? aux : fila[campoNombre];
 
             if (esUnRadioButton) {
