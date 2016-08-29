@@ -29,7 +29,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     , align: "center",nulleable:true,ordenable:true
                 }
 
-        align: "center": Determina la alineacion del campo en las filas
+        [DEPRECADO] align: "center": Determina la alineacion del campo en las filas.
+                    style: Permite establecer el estilo para la columna.
         nulleable: por defecto false : Determina si el campo admite valores nulos.
         ordenable: por defecto true : Determina si la columna va a ser ordenable
         editable: Determina si el campo puede ser editado
@@ -303,8 +304,14 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
 
             //alinear si se definio alineado para el campo en cuestion.
+            if (this.campos[index_cell].style)
+                celdas[index_cell].style = this.campos[index_cell].style;
+
+            //alinear si se definio alineado para el campo en cuestion.
             if (this.campos[index_cell].align)
                 celdas[index_cell].style.textAlign = this.campos[index_cell].align;
+
+
 
         }
 

@@ -8,7 +8,7 @@ YUIDoc
 
 <p>
 <h3> PARAMETROS DE CAMPOS JSON</h3>
-    nombreCampo: nombreCampo: nombre del campo en la BD
+     nombreCampo: nombreCampo: nombre del campo en la BD
     id: En caso de que tenga un id es el nombre del campo en la base de datos. Usado generalmente para campos defs
     nro_campo_tipo: Tipo de campo def. Por defecto 104
     enDB: Si el campo def existe en la Base de datos.
