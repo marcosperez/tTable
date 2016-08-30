@@ -30,7 +30,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 }
 
         [DEPRECADO] align: "center": Determina la alineacion del campo en las filas.
-                    style: Permite establecer el estilo para la columna.
+                    style: EJ:{'textAlign':'center'}, Permite establecer el estilo para la columna.
         nulleable: por defecto false : Determina si el campo admite valores nulos.
         ordenable: por defecto true : Determina si la columna va a ser ordenable
         editable: Determina si el campo puede ser editado
@@ -52,6 +52,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                                                 filtroXML: nvFW.pageContents.filtroEstados,
                                                 target: 'campos_tb_' + nombreTabla + id
                                             });
+
+        convertirValorBD: Permite convertir el valor que nos llega de la BD en un nuevo valor, ejemplo con fechas. Es muy util con 1 y 0 o true y false depende la necesidad.
+
+        Ej:function (valor) { return valor.slice(0, 8); }
     */
 
     //Campos que se van a cargar desde el resultado de base de datos pero no se van a mostrar en la tabla
