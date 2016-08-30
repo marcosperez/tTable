@@ -304,8 +304,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
 
             //alinear si se definio alineado para el campo en cuestion.
-            if (this.campos[index_cell].style)
-                celdas[index_cell].style = this.campos[index_cell].style;
+            if (this.campos[index_cell].style){
+                for (key in this.campos[index_cell].style)
+                    celdas[index_cell].style[key] = this.campos[index_cell].style[key];
+            }
 
             //alinear si se definio alineado para el campo en cuestion.
             if (this.campos[index_cell].align)
