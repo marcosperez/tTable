@@ -1063,7 +1063,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             '<table style="' + tabla.tHeader.style + '"  id="header_tbl_' + tabla.nombreTabla + '" >  ' +
             '<tr class="tbLabel">';
 
-        for (col_index = 0; col_index < tabla.cabeceras.length; col_index++) {
+        for (col_index = 0; col_index < tabla.campos.length; col_index++) {
             //Cargamos valor por defecto campos de tipo texto.
             tabla.campos[col_index].nro_campo_tipo = tabla.campos[col_index].nro_campo_tipo ? tabla.campos[col_index].nro_campo_tipo : '104';
             var ordenHTML = '';
