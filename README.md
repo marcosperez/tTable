@@ -8,7 +8,7 @@ YUIDoc
 
 <p>
 <h3> PARAMETROS DE CAMPOS JSON</h3>
-```json
+'''json
 {
     nombreCampo: "nro_com_tipo", nro_campo_tipo: 100, enDB: false, width: "10%",  editable: false,
         get_html: function (celda) { return celda.valor?celda.valor:'-'} , unico:true,ordenable:true
@@ -27,7 +27,7 @@ YUIDoc
 {
     nombreCampo: "nombre_asp", nro_campo_tipo: 104, enDB: false, width: "35%",  nulleable: true
 }
-```
+'''
 
 <!--
      nombreCampo: nombreCampo: nombre del campo en la BD
