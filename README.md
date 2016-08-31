@@ -8,6 +8,28 @@ YUIDoc
 
 <p>
 <h3> PARAMETROS DE CAMPOS JSON</h3>
+```json
+{
+    nombreCampo: "nro_com_tipo", nro_campo_tipo: 100, enDB: false, width: "10%",  editable: false,
+        get_html: function (celda) { return celda.valor?celda.valor:'-'} , unico:true,ordenable:true
+    },
+{
+    nombreCampo: "com_tipo", nro_campo_tipo: 104, enDB: false, width: "20%"
+},
+{
+    nombreCampo: "style", nro_campo_tipo: 104, enDB: false, width: "25%"//, unico: true
+    , nulleable: true,style:{'textAlign':'center'}
+},
+{
+    nombreCampo: "Permitir", id: "nro_permiso", nro_campo_tipo: 104, enDB: false, width: "20%",
+    campoDefOpciones: { filtroXML: nvFW.pageContents.filtroPermisos, nro_campo_tipo: 1 }
+},
+{
+    nombreCampo: "nombre_asp", nro_campo_tipo: 104, enDB: false, width: "35%",  nulleable: true
+}
+```
+
+<!--
      nombreCampo: nombreCampo: nombre del campo en la BD
     id: En caso de que tenga un id es el nombre del campo en la base de datos. Usado generalmente para campos defs
     nro_campo_tipo: Tipo de campo def. Por defecto 104
@@ -33,4 +55,5 @@ YUIDoc
     radioButton: Determina el campo es un radioButton
     checkOnDelete: Determina si se debe checkear antes de eliminar el campo
     checkBox: Determina si el campo es un radio button
+-->
 </p>
