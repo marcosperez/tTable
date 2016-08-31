@@ -8,26 +8,7 @@ YUIDoc
 
 <p>
 <h3> PARAMETROS DE CAMPOS JSON</h3>
-'''json
-{
-    nombreCampo: "nro_com_tipo", nro_campo_tipo: 100, enDB: false, width: "10%",  editable: false,
-        get_html: function (celda) { return celda.valor?celda.valor:'-'} , unico:true,ordenable:true
-    },
-{
-    nombreCampo: "com_tipo", nro_campo_tipo: 104, enDB: false, width: "20%"
-},
-{
-    nombreCampo: "style", nro_campo_tipo: 104, enDB: false, width: "25%"//, unico: true
-    , nulleable: true,style:{'textAlign':'center'}
-},
-{
-    nombreCampo: "Permitir", id: "nro_permiso", nro_campo_tipo: 104, enDB: false, width: "20%",
-    campoDefOpciones: { filtroXML: nvFW.pageContents.filtroPermisos, nro_campo_tipo: 1 }
-},
-{
-    nombreCampo: "nombre_asp", nro_campo_tipo: 104, enDB: false, width: "35%",  nulleable: true
-}
-'''
+
 
 <!--
      nombreCampo: nombreCampo: nombre del campo en la BD
@@ -57,3 +38,62 @@ YUIDoc
     checkBox: Determina si el campo es un radio button
 -->
 </p>
+
+<h2>Ej Creacion</h2>
+```javascript
+tabla_tipos_abm = new tTable()
+
+//Nombre de la tabla y id de la variable
+tabla_tipos_abm.nombreTabla = "tabla_tipos_abm";
+
+//Agregamos consulta XML
+tabla_tipos_abm.filtroXML = nvFW.pageContents.filtroTipos;
+tabla_tipos_abm.cabeceras = ["Nro Tipo", "Tipo","Style","Permiso","Nombre ASP"];
+tabla_tipos_abm.async = true;
+tabla_tipos_abm.campos = [
+    {
+        nombreCampo: "nro_com_tipo", nro_campo_tipo: 100, enDB: false, width: "10%",  editable: false,
+            get_html: function (celda) { return celda.valor?celda.valor:'-'} , unico:true,ordenable:true
+        },
+    {
+        nombreCampo: "com_tipo", nro_campo_tipo: 104, enDB: false, width: "20%"
+    },
+    {
+        nombreCampo: "style", nro_campo_tipo: 104, enDB: false, width: "25%"//, unico: true
+        , nulleable: true,style:{'textAlign':'center'}
+    },
+    {
+        nombreCampo: "Permitir", id: "nro_permiso", nro_campo_tipo: 104, enDB: false, width: "20%",
+        campoDefOpciones: { filtroXML: nvFW.pageContents.filtroPermisos, nro_campo_tipo: 1 }
+    },
+    {
+        nombreCampo: "nombre_asp", nro_campo_tipo: 104, enDB: false, width: "35%",  nulleable: true
+    }
+]
+
+tabla_tipos_abm.table_load_html();
+tabla_tipos_abm.addOnComplete(function (tabla) {
+    tabla.resize();
+});
+```
+<h3>Ej Campos</h3>
+```json
+{
+    nombreCampo: "nro_com_tipo", nro_campo_tipo: 100, enDB: false, width: "10%",  editable: false,
+        get_html: function (celda) { return celda.valor?celda.valor:'-'} , unico:true,ordenable:true
+    },
+{
+    nombreCampo: "com_tipo", nro_campo_tipo: 104, enDB: false, width: "20%"
+},
+{
+    nombreCampo: "style", nro_campo_tipo: 104, enDB: false, width: "25%"//, unico: true
+    , nulleable: true,style:{'textAlign':'center'}
+},
+{
+    nombreCampo: "Permitir", id: "nro_permiso", nro_campo_tipo: 104, enDB: false, width: "20%",
+    campoDefOpciones: { filtroXML: nvFW.pageContents.filtroPermisos, nro_campo_tipo: 1 }
+},
+{
+    nombreCampo: "nombre_asp", nro_campo_tipo: 104, enDB: false, width: "35%",  nulleable: true
+}
+```
