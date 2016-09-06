@@ -113,13 +113,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.setValor = setValor;
     this.modCelda = modCelda;
 
-    //Metodos radio button
-    this.funcionRadioButtonTable = funcionRadioButton;
-    this.existenRadioButton = existenRadioButton;
-    this.actualizarRadiobutton = actualizarRadiobutton;
 
-    //Metodos checkbox
-    this.funcionCheckBox = funcionCheckBox;
 
     //Variable de control
     this.agregar_fila = agregar_fila;
@@ -130,6 +124,17 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     /* Determina si la columna tiene que ser deabilitada para edicion*/
     var columnasADeshabilitar = [];
     var estadoDeshabilitar = false;
+
+    //Permite aplicar un estilo particular a una fila.
+    this.estilo = backgroundColorCallback ? backgroundColorCallback : function (fila) { };
+     //Metodos radio button
+    this.funcionRadioButtonTable = funcionRadioButton;
+    this.existenRadioButton = existenRadioButton;
+    this.actualizarRadiobutton = actualizarRadiobutton;
+
+    //Metodos checkbox
+    this.funcionCheckBox = funcionCheckBox;
+
 
     //Metodos definidos por el usuario
     //Permtie especificar una funcion que se va a lanzar cuando se elimina una fila. Recibe como parametro la fila junto a sus parametros de control y camposHide.
@@ -176,8 +181,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         return true;
     }
 
-    //Permite aplicar un estilo particular a una fila.
-    this.estilo = backgroundColorCallback ? backgroundColorCallback : function (fila) { };
+
     /**
      * Description
      * @method default_get_campo
