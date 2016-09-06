@@ -61,6 +61,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     //Campos que se van a cargar desde el resultado de base de datos pero no se van a mostrar en la tabla
     //Json {nombreCampo: nombre del campo hide en la BD}
     this.camposHide = [];
+    // Representa la string de conexion que se va a usar en el TRs
+    this.cn = null;
     // Representa la consulta xml que va a cargar de datos la tabla
     this.filtroXML = filtroXML;
     //Filtro where aplicable a la consulta principal de la tabla
@@ -916,7 +918,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         var rs = new tRS();
         rs.async = true;
-
+        if(tabla.cn)
+            rs.cn = tabla.cn;
         nvFW.bloqueo_activar($(tabla.nombreTabla), 'cargando-' + tabla.nombreTabla);
 
         rs.onComplete = function () {
