@@ -1426,7 +1426,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     function funcionCheckBox(check, nombreTabla) {
         var stringCheck = "";
 
-        if (check.valor == true)
+        if (check.valor == true || check.valor =="True" || check.valor ==1)
             stringCheck += 'true" checked>';
         else
             stringCheck += 'false">';
