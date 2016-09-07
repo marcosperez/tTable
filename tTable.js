@@ -39,6 +39,9 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         radioButton: Determina el campo es un radioButton
         checkOnDelete: Determina si se debe checkear antes de eliminar el campo
         checkBox: Determina si el campo es un radio button
+        ordenButton: Permite utilizar la columna para subir o bajar filas particulares.
+                        Es importante q el nombreCampo este en la BD para tomar ese criterio de ordenamiento.
+                        En filtroXML se debe agregar como criterio de ordenamiento la columna de ordenamiento
 
         PARA MAYOR PERSONALIZACION
         get_html(campo,nombreTabla,arregloValoresFila): Funcion que permite generar un html enriquesido para mostrar el campo.
@@ -1213,19 +1216,47 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
     }
 
+
+    /**
+     * Description
+     * Permite bajar una fila de la tabla
+     * @method bajar_fila
+     * @param {} fila
+     * @param {} columna
+     * @return 
+     */
     this.bajar_fila = function (fila, columna) {
+        //si es la ultima fila sale
         if ((this.getFila(fila).indice - 1) == this.cantColumnas)
             return;
 
         this.swap_fila(fila, columna, 1)
     }
 
+    /**
+     * Description
+     * Permite subir una fila de la tabla
+     * @method subir_fila
+     * @param {} fila
+     * @param {} columna
+     * @return 
+     */
     this.subir_fila = function (fila, columna) {
+        //Si es la primer fila sale
         if (this.getFila(fila).indice == 1) return;
 
         this.swap_fila(fila, columna, -1)
     }
 
+    /**
+     * Description
+     * Funcion auxiliar para modificar el orden de las filas
+     * @method subir_fila
+     * @param {} fila
+     * @param {} columna
+     * @param {} ord: 1 para subir la fila, -1 para bajarla
+     * @return 
+     */
     this.swap_fila = function (fila, columna, ord) {
         this.actualizarData();
 
