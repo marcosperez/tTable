@@ -8,7 +8,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     var table = this;
     //es el nombre de la tabla y el id del div contenedor. Todo lo relacionado a la tabla lo utiliza
     this.nombreTabla = nombreTabla
-    //Titulos que se van a colocar en la tabla, debe coincidir con la cantidad de campos.
+    //Titulos que se van a colocar en la tabla,     e coincidir con la cantidad de campos.
     this.cabeceras = cabeceras;
     //campos que se van a mostrar, es una representacion json de varios parametros posibles.
     this.campos = campos;
@@ -31,6 +31,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         [DEPRECADO] align: "center": Determina la alineacion del campo en las filas.
                     style: EJ:{'textAlign':'center'}, Permite establecer el estilo para la columna.
+
         nulleable: por defecto false : Determina si el campo admite valores nulos.
         ordenable: por defecto true : Determina si la columna va a ser ordenable
         editable: Determina si el campo puede ser editado
@@ -44,6 +45,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                         En filtroXML se debe agregar como criterio de ordenamiento la columna de ordenamiento
 
         PARA MAYOR PERSONALIZACION
+        --------------------------
         get_html(campo,nombreTabla,arregloValoresFila): Funcion que permite generar un html enriquesido para mostrar el campo.
         get_campo(nombreTabla, id): Definicion personalizada de campo def para cargar
                                     Ejemplo
@@ -243,6 +245,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      * @return 
      */
     function agregar_fila(valores_campos) {
+
         var table = $('campos_tb_' + this.nombreTabla);
         table.deleteRow(table.rows.length - 1);
         var row = table.insertRow(table.rows.length);
@@ -287,10 +290,9 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     //Definimos la funcion para los checkBox.
                     this.campos[index_cell].get_campo = this.campos[index_cell].get_campo ?
                         this.campos[index_cell].get_campo : funcionCheckBox;
+                    //Verificamos el valor del checkbox
 
-                    celdas[index_cell].innerHTML = this.campos[index_cell].get_campo({
-                        fila: this.cantFilas
-                    }, this.nombreTabla);
+                    celdas[index_cell].innerHTML = this.campos[index_cell].get_campo(valores_campos[index_cell], this.nombreTabla);
 
                 } else {
                     //Verificiamos que exista la funcion get_Campo
@@ -309,7 +311,10 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                         }
                     }
                     else {
-                        celdas[index_cell].innerHTML = this.campos[index_cell].get_html(valores_campos[index_cell], this.nombreTabla, valores_campos);
+                        if (this.campos[index_cell].get_html)
+                            celdas[index_cell].innerHTML = this.campos[index_cell].get_html(valores_campos[index_cell], this.nombreTabla, valores_campos);
+                        else
+                            celdas[index_cell].innerHTML = valores_campos[index_cell].valor;
                     }
 
 
@@ -1258,6 +1263,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      * @return 
      */
     this.swap_fila = function (fila, columna, ord) {
+
         this.actualizarData();
 
         this.data[fila].tabla_control.ordenModificado = true;
@@ -1412,7 +1418,9 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     * @param {} fila
     * @return
     */
-    this.click_check = function (fila) {
+    this.click_check = function (fila, columna) {
+
+        console.log(columna)
         this.data[fila].tabla_control.modificado = true;
     }
 
@@ -1426,12 +1434,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     function funcionCheckBox(check, nombreTabla) {
         var stringCheck = "";
 
-        if (check.valor == true || check.valor =="True" || check.valor ==1)
+        if (check.valor == true || check.valor == "True" || check.valor == 1)
             stringCheck += 'true" checked>';
         else
             stringCheck += 'false">';
         //
-        var strHtml = '<input type="checkbox" onclick="' + nombreTabla + '.click_check(' + check.fila + ')" name="vehicle" value="' + stringCheck;
+        var strHtml = '<input type="checkbox" onclick="' + nombreTabla + '.click_check(' + check.fila + ',' + check.columna + ')" name="vehicle" value="' + stringCheck;
 
         return strHtml;
     }
