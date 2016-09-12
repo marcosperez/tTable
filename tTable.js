@@ -1034,8 +1034,12 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
         }
         else {
-            $("div_boton_" + tabla.nombreTabla).display = "none";
-            $("div_boton_" + tabla.nombreTabla).innerHTML = '';
+            try{
+                $("div_boton_" + tabla.nombreTabla).display = "none";
+                $("div_boton_" + tabla.nombreTabla).innerHTML = '';
+            }catch( err){
+                console.log(err);
+            }
         }
 
         if (div_boton && h > 5) {
@@ -1232,7 +1236,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
      */
     this.bajar_fila = function (fila, columna) {
         //si es la ultima fila sale
-        if ((this.getFila(fila).indice - 1) == this.cantColumnas)
+        if ((this.getFila(fila).indice+1) == this.cantFilas)
+        //if ((this.getFila(fila).indice - 1) == this.cantColumnas)
             return;
 
         this.swap_fila(fila, columna, 1)
