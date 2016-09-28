@@ -92,6 +92,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
     this.radioSeleccionadoCampo = "";
     //Cantidad de filas totales de la tabla visibles e invisibles
     this.cantFilas = 0;
+    //podemos usar este metodo para conecer la cantidad de filas visibles totales de la tabla
+    //this.cantFilasVislbles = tabla.indexReal(tabla.cantFilas);
     //Cantidad de columnas de la tabla, generalmente igual a la cantidad de campos
     this.cantColumnas = 0;
     //determina si la tabla es asincronica, es true por defecto
