@@ -19,6 +19,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         nro_campo_tipo: Tipo de campo def. Por defecto 104
         enDB:(Default False) Si el campo def existe en la Base de datos.
         width: Porcentaje que se le va a asignar a la columna
+        valorDefecto: Valor o funcion que retorna un valor que se va asignar a un campo_def en caso de ser creado
         campoDefOpciones: Genera un campo def con las opciones pasadas (por defecto enDB:false)
                 EJ:
                 {
@@ -306,9 +307,16 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                     if (esEditable) {
 
                         this.campos[index_cell].get_campo(this.nombreTabla, '_fila_' + this.cantFilas + '_columna_' + index_cell);
-                        if (this.campos[index_cell].valorDefecto)
-                            campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.cantFilas + '_columna_' + index_cell, this.campos[index_cell].valorDefecto);
+                        var valorPorDefecto = this.campos[index_cell].valorDefecto;
+                        if (valorPorDefecto){
+                            //Verificamos si el valor por defecto viene en una funcion o en un valor
+                            if(esFuncion(valorPorDefecto))
+                                valorPorDefecto =valorPorDefecto();
+                            //Seteamos el valor en el campo por defecto en el campo def_
+                            campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.cantFilas + '_columna_' + index_cell, valorPorDefecto);
+                            }
                         if (valores_campos[index_cell].valor && valores_campos[index_cell].valor != "") {
+
                             campos_defs.set_value(this.nombreTabla + "_campos_defs" + '_fila_' + this.cantFilas + '_columna_' + index_cell, valores_campos[index_cell].valor);
                         }
                     }
@@ -1417,7 +1425,18 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
 
     /************************************** UTILES ***********************************************************************/
-
+    /**
+    * Description
+    * Verifica que el calor pasado sea un funcion
+    * @method esFuncion
+    * @param {} valor
+    * @return true para funciones, false para el resto
+    */
+    function esFuncion(valor){
+        if (typeof valor === "function")
+            return true;
+        return false;
+    }
 
     /*********************CHECKBOX *************/
     /**
