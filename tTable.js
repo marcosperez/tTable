@@ -378,7 +378,9 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         }
 
 
-        if (!this.data[this.cantFilas]) this.data[this.cantFilas] = {};
+        if (!this.data[this.cantFilas])
+            this.data[this.cantFilas] = {};
+
         this.data[this.cantFilas].tabla_control = {
             existeEnBd: valores_campos[this.cantColumnas]
             , modificado: valores_campos[this.cantColumnas + 1]
@@ -394,13 +396,11 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
 
         this.estilo(row);
 
-
-
         //info necesaria para la funcion deshacer
         if (this.deshacer_acciones.activo) {
             this.deshacer_acciones[this.deshacer_acciones.length] = {};
             this.deshacer_acciones[this.deshacer_acciones.length - 1]["accion"] = "agregar";
-            this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = table.rows.length;
+            this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = this.data[this.cantFilas - 1].tabla_control.idPermanente;
             this.deshacer_acciones.activo = false;
         }
 
@@ -443,6 +443,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 }
         }
 
+        this.idAutoIncremental++;
+        
         //Configuramos los campos de control para filas nuevas
         //Determina si el valor viene de la base de datos
         valores_campos[cell_index] = false;
@@ -452,6 +454,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         valores_campos[cell_index + 2] = false;
         //Determina el orden de la nueva fila
         valores_campos[cell_index + 3] = false;
+        //id auto incremenal
+        valores_campos[cell_index + 4] = this.idAutoIncremental;
 
         //agregamos la fila a la tabla
         this.agregar_fila(valores_campos);
@@ -486,7 +490,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             if (this.deshacer_acciones.activo) {
                 this.deshacer_acciones[this.deshacer_acciones.length] = [];
                 this.deshacer_acciones[this.deshacer_acciones.length - 1]["accion"] = "eliminar";
-                this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = row_index;
+                this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = this.data[row_index].tabla_control.idPermanente;
                 this.deshacer_acciones.activo = false;
             }
             if (this.data[row_index].tabla_control.existeEnBd) {
@@ -557,7 +561,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         if (this.deshacer_acciones.activo) {
             this.deshacer_acciones[this.deshacer_acciones.length] = {};
             this.deshacer_acciones[this.deshacer_acciones.length - 1]["accion"] = "modificar";
-            this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = row_index;
+            this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = this.data[row_index].tabla_control.idPermanente;
             this.deshacer_acciones[this.deshacer_acciones.length - 1]["datos"] = this.data[row_index];
             this.deshacer_acciones.activo = false;
         }
@@ -650,6 +654,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         fila_objeto.modificado = this.data[row_index].tabla_control.modificado;
         fila_objeto.eliminado = this.data[row_index].tabla_control.eliminado;
         fila_objeto.ordenModificado = this.data[row_index].tabla_control.ordenModificado;
+        fila_objeto.idPermanente = this.data[row_index].tabla_control.idPermanente;
 
         return fila_objeto;
     }
@@ -705,7 +710,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             }
         }
 
-
+        debugger
         return strXML;
     }
 
@@ -800,7 +805,8 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                             if (this.campos[j].nombreCampo != nombreColumna) continue;
                             celda = row.cells[j];
                             //document.getElementById(celda.id).disabled = (estado == true ? "disabled" : "");
-                            campos_defs.habilitar(celda.firstChild.id.substr(12, celda.firstChild.id.length), !estado)
+                            //campos_defs.habilitar(celda.firstChild.id.substr(12, celda.firstChild.id.length), !estado)
+                            campos_defs.habilitar(this.nombreTabla + "_campos_defs" + '_fila_' + i + '_columna_' + j, !estado)
                         }
                     }
                 }
@@ -887,6 +893,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
                 this.data[row_index].tabla_control.modificado = fila.modificado;
                 this.data[row_index].tabla_control.eliminado = fila.eliminado;
                 this.data[row_index].tabla_control.ordenModificado = fila.ordenModificado;
+                this.data[row_index].tabla_control.idPermanente = fila.idPermanente;
             }
         }
     }
@@ -1157,6 +1164,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             , modificado: 0
             , eliminado: 0
             , ordenModificado: 0
+            , idPermanente: 0
         }
         tabla.data.unshift(fila);
 
@@ -1350,7 +1358,7 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
         //info para deshacer acciones
         this.deshacer_acciones[this.deshacer_acciones.length] = [];
         this.deshacer_acciones[this.deshacer_acciones.length - 1]["accion"] = "ordenModificado";
-        this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = fila;
+        this.deshacer_acciones[this.deshacer_acciones.length - 1]["fila"] = this.data[fila].tabla_control.idPermanente;;
         this.deshacer_acciones[this.deshacer_acciones.length - 1]["orden"] = ord;
         this.deshacer_acciones[this.deshacer_acciones.length - 1]["columna"] = columna;
 
@@ -1662,52 +1670,62 @@ function tTable(nombreTabla, filtroXML, cabeceras, campos, callbackValidacion, c
             return;
 
         var tabla = $('campos_tb_' + this.nombreTabla);
-        debugger
+       
         if (this.deshacer_acciones[this.deshacer_acciones.length - 1].accion == 'eliminar') {
-            var fila = tabla.rows[this.deshacer_acciones[this.deshacer_acciones.length - 1].fila];
+            
+            var fila = tabla.rows[this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data)];
             fila.style.display = 'table-row';
-            this.data[this.deshacer_acciones[this.deshacer_acciones.length - 1].fila].tabla_control.eliminado = false;
+            this.data[this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data)].tabla_control.eliminado = false;
             this.deshacer_acciones.splice(this.deshacer_acciones.length - 1, 1);
             this.actualizarData();
         }
         else if (this.deshacer_acciones[this.deshacer_acciones.length - 1].accion == 'modificar') {
             
             this.actualizarData();
-            this.data[this.deshacer_acciones[this.deshacer_acciones.length - 1].fila] = this.deshacer_acciones[this.deshacer_acciones.length - 1].datos;
-            this.data[this.deshacer_acciones[this.deshacer_acciones.length - 1].fila].tabla_control.modificado = false;
-            this.data.shift();
+            this.data[this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data)] = this.deshacer_acciones[this.deshacer_acciones.length - 1].datos;
+            this.data[this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data)].tabla_control.modificado = false;
+
 
             for (var i = 0; i < this.campos.length; i++) {
                 this.setValor(this.campos[i].nombreCampo,
-                         this.deshacer_acciones[this.deshacer_acciones.length - 1].fila,
+                         this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data),
                          this.deshacer_acciones[this.deshacer_acciones.length - 1].datos[this.campos[i].nombreCampo]);
             }
 
             this.deshacer_acciones.splice(this.deshacer_acciones.length - 1, 1);
 
+            this.data.shift();
             this.mostrar_tabla(this);
 
             this.actualizarData();
         }
         else if (this.deshacer_acciones[this.deshacer_acciones.length - 1].accion == 'agregar') {
-            tabla.deleteRow(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila - 1);
-            this.data.splice(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila - 1, 1);
+            tabla.deleteRow(this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data));
+            this.data.splice(this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data), 1);
             this.cantFilas--;
             this.deshacer_acciones.splice(this.deshacer_acciones.length - 1, 1);
             this.actualizarData();
         }
         else if (this.deshacer_acciones[this.deshacer_acciones.length - 1].accion == 'ordenModificado') {
-            this.swap(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.deshacer_acciones[this.deshacer_acciones.length - 1].columna, this.deshacer_acciones[this.deshacer_acciones.length - 1].orden);
+            this.swap(this.deshacer_acciones.getFila(this.deshacer_acciones[this.deshacer_acciones.length - 1].fila, this.data), this.deshacer_acciones[this.deshacer_acciones.length - 1].columna, this.deshacer_acciones[this.deshacer_acciones.length - 1].orden);
             this.deshacer_acciones.splice(this.deshacer_acciones.length - 1, 1);
         }
         else if (this.deshacer_acciones[this.deshacer_acciones.length - 1].accion == 'orden') {
 
             this.ordenar(this.deshacer_acciones[this.deshacer_acciones.length - 1].cabecera,
-                this.deshacer_acciones[this.deshacer_acciones.length - 1].tipo,
+                this.deshacer_acciones[this.deshacer_acciones.length - 1].tipo == 'DESC' ? 'ASC' : 'DESC',
                 this.deshacer_acciones[this.deshacer_acciones.length - 1].nro_campo_tipo,
                 true);
             this.deshacer_acciones.splice(this.deshacer_acciones.length - 1, 1);
         }
     }
+
+    this.deshacer_acciones.getFila = function (row_index, data) {
+        for(var i = 1 ; i < data.length; i ++) {
+            if(data[i].tabla_control.idPermanente == row_index)
+                return i;
+        }
+        return -1;
+    } 
 
 }
